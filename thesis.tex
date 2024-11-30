@@ -1,0 +1,376 @@
+%
+% MIT License
+%
+% Copyright (c) 2024 Fabricio Batista Narcizo.
+%
+% Permission is hereby granted, free of charge, to any person obtaining a copy
+% of this software and associated documentation files (the "Software"), to deal
+% in the Software without restriction, including without limitation the rights
+% to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+% copies of the Software, and to permit persons to whom the Software is
+% furnished to do so, subject to the following conditions:
+%
+% The above copyright notice and this permission notice shall be included in
+% all copies or substantial portions of the Software.
+%
+% THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+% IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+% FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+% AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+% LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+% OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
+% SOFTWARE.
+%
+
+% The ITU template is based on the ABNTex2 class, which is a LaTeX class for
+% writing documents following the Brazilian Association of Technical Standards
+% (ABNT) standards. This document uses arabic number and the first paragraphs
+% of each chapter doesn't have spacing.
+\documentclass[pnumromarab,noindentfirst]{abnt}
+
+
+% -----------------------------------------------------------------------------
+% ITU Package and Related Dependencies
+% -----------------------------------------------------------------------------
+\usepackage{ITU}  % ITU package for formatting (specific to ITU use)
+\pagestyle{itu}   % Define the header and footer style for ITU format
+
+
+% -----------------------------------------------------------------------------
+% General Utility Packages
+% -----------------------------------------------------------------------------
+
+% Encoding and fonts.
+\usepackage{type1cm}  % Custom section heading font size.
+
+% Document formatting and structure.
+\usepackage{pdflscape}  % Landscape orientation for some pages.
+\usepackage{pdfpages}   % Embed external PDF files.
+\usepackage{comment}    % Block comment support.
+
+% Text and color formatting.
+\usepackage{xcolor}           % Text color customization.
+\usepackage{lettrine}         % Drop caps (decorative first letter).
+\usepackage{hologo}           % Typeset TeX-related logos.
+\usepackage{color, colortbl}  % Table cell coloring
+
+% Graphics and figures.
+\usepackage{graphicx}                    % To include images.
+\graphicspath{{./images/}}               % Path for image files.
+\usepackage{float}                       % Control figure/table placement.
+\usepackage{subcaption}                  % Support for subfigures.
+\usepackage[font=footnotesize]{caption}  % Customize figure/table captions.
+\usepackage{tikz} 					     % Drawing package.
+\usepackage{pgfplots} 					 % Plotting package.
+\usepackage{readarray} 				     % Read arrays from external files.
+
+% Lists.
+\usepackage{paralist}             % Inline or compact list environments.
+\usepackage{enumerate}            % Extended enumerate lists.
+\usepackage[ampersand]{easylist}  % Easy-to-use custom lists.
+
+% Tables.
+\usepackage{longtable}       % Multi-page tables
+\usepackage{multirow}        % Cells spanning multiple rows
+\usepackage{bigstrut}        % Adjust vertical spacing in table rows
+\usepackage{array}           % Enhanced table column formatting
+\usepackage{calc}            % Arithmetic for table dimensions
+\usepackage{setspace}        % Custom text spacing
+\usepackage{booktabs}        % Professional-quality tables.
+\usepackage{threeparttable}  % Three-part tables.
+
+% Math and symbols.
+\usepackage{amsmath, amssymb}  % Advanced mathematical typesetting.
+\usepackage{mathtools}         % Advanced math tools.
+
+% Links and URLs.
+\usepackage[colorlinks=false]{hyperref}  % For hyperlinks (color disabled).
+\usepackage{bookmark}                    % Enhanced bookmark control.
+
+% Citations and references.
+\usepackage[nocompress]{cite}  % To manage citation ordering.
+
+% Code and listings.
+\usepackage{listings}  % To print source code in the document.
+
+% Glossaries and acronyms.
+\usepackage[acronym,nonumberlist]{glossaries}  % Acronym and glossary support.
+
+
+% -----------------------------------------------------------------------------
+% Color Definitions
+% -----------------------------------------------------------------------------
+\definecolor{Gray}{gray}{0.8} 
+\definecolor{halfgray}{gray}{0.55}
+\definecolor{ipython_frame}{RGB}{207, 207, 207}
+\definecolor{ipython_bg}{RGB}{247, 247, 247}
+\definecolor{ipython_red}{RGB}{186, 33, 33}
+\definecolor{ipython_green}{RGB}{0, 128, 0}
+\definecolor{ipython_cyan}{RGB}{64, 128, 128}
+\definecolor{ipython_purple}{RGB}{170, 34, 255}
+
+
+% -----------------------------------------------------------------------------
+% Mathematical Tools
+% -----------------------------------------------------------------------------
+\DeclarePairedDelimiter\abs{\lvert}{\rvert}   % Absolute value
+\DeclarePairedDelimiter\norm{\lVert}{\rVert}  % Norm
+
+
+% -----------------------------------------------------------------------------
+% Table Formatting Packages
+% -----------------------------------------------------------------------------
+
+% Custom Column Types.
+\newcolumntype{L}[1]{>{\raggedright\let\newline\\\arraybackslash\hspace{0pt}}p{#1}}  % Left-aligned.
+\newcolumntype{C}[1]{>{\centering\let\newline\\\arraybackslash\hspace{0pt}}p{#1}}  % Centered.
+\newcolumntype{R}[1]{>{\raggedleft\let\newline\\\arraybackslash\hspace{0pt}}p{#1}}  % Right-aligned.
+
+
+% -----------------------------------------------------------------------------
+% TikZ and PGFPlots Configuration
+% -----------------------------------------------------------------------------
+\usepgfplotslibrary{groupplots}
+\usetikzlibrary{calc,intersections,quotes,angles,external,patterns,positioning}
+\usetikzlibrary{external}
+\tikzexternalize[prefix=tikz/]
+\pgfplotsset{compat=1.18}
+\providecommand\mathdefault[1]{#1}
+
+
+% -----------------------------------------------------------------------------
+% Python Language Formatting
+% -----------------------------------------------------------------------------
+\lstdefinelanguage{Python}{
+	morekeywords={access,and,break,class,continue,def,del,elif,else,except,exec,finally,for,from,global,if,import,in,is,lambda,not,or,pass,print,raise,return,try,while},
+	morekeywords=[2]{abs,all,any,basestring,bin,bool,bytearray,callable,chr,classmethod,cmp,compile,complex,delattr,dict,dir,divmod,enumerate,eval,execfile,file,filter,float,format,frozenset,getattr,globals,hasattr,hash,help,hex,id,input,int,isinstance,issubclass,iter,len,list,locals,long,map,max,memoryview,min,next,object,oct,open,ord,pow,property,range,raw_input,reduce,reload,repr,reversed,round,set,setattr,slice,sorted,staticmethod,str,sum,super,tuple,type,unichr,unicode,vars,xrange,zip,apply,buffer,coerce,intern},
+	sensitive=true,
+	morecomment=[l]\#,
+	morestring=[b]',
+	morestring=[b]",
+	morestring=[s]{'''}{'''},
+	morestring=[s]{"""}{"""},
+	morestring=[s]{r'}{'},
+	morestring=[s]{r"}{"},
+	morestring=[s]{r'''}{'''},
+	morestring=[s]{r"""}{"""},
+	morestring=[s]{u'}{'},
+	morestring=[s]{u"}{"},
+	morestring=[s]{u'''}{'''},
+	morestring=[s]{u"""}{"""},
+	% {replace}{replacement}{lenght of replace}
+	% *{-}{-}{1} will not replace in comments and so on
+	literate=
+	{á}{{\'a}}1 {é}{{\'e}}1 {í}{{\'i}}1 {ó}{{\'o}}1 {ú}{{\'u}}1
+	{Á}{{\'A}}1 {É}{{\'E}}1 {Í}{{\'I}}1 {Ó}{{\'O}}1 {Ú}{{\'U}}1
+	{à}{{\`a}}1 {è}{{\`e}}1 {ì}{{\`i}}1 {ò}{{\`o}}1 {ù}{{\`u}}1
+	{À}{{\`A}}1 {È}{{\'E}}1 {Ì}{{\`I}}1 {Ò}{{\`O}}1 {Ù}{{\`U}}1
+	{ä}{{\"a}}1 {ë}{{\"e}}1 {ï}{{\"i}}1 {ö}{{\"o}}1 {ü}{{\"u}}1
+	{Ä}{{\"A}}1 {Ë}{{\"E}}1 {Ï}{{\"I}}1 {Ö}{{\"O}}1 {Ü}{{\"U}}1
+	{â}{{\^a}}1 {ê}{{\^e}}1 {î}{{\^i}}1 {ô}{{\^o}}1 {û}{{\^u}}1
+	{Â}{{\^A}}1 {Ê}{{\^E}}1 {Î}{{\^I}}1 {Ô}{{\^O}}1 {Û}{{\^U}}1
+	{œ}{{\oe}}1 {Œ}{{\OE}}1 {æ}{{\ae}}1 {Æ}{{\AE}}1 {ß}{{\ss}}1
+	{ç}{{\c c}}1 {Ç}{{\c C}}1 {ø}{{\o}}1 {å}{{\r a}}1 {Å}{{\r A}}1
+	{€}{{\EUR}}1 {£}{{\pounds}}1
+	%
+	{^}{{{\color{ipython_purple}\^{}}}}1
+	{=}{{{\color{ipython_purple}=}}}1
+	%
+	{+}{{{\color{ipython_purple}+}}}1
+	{*}{{{\color{ipython_purple}$^\ast$}}}1
+	{/}{{{\color{ipython_purple}/}}}1
+	%
+	{+=}{{{+=}}}1
+	{-=}{{{-=}}}1
+	{*=}{{{$^\ast$=}}}1
+	{/=}{{{/=}}}1,
+	literate=
+	*{-}{{{\color{ipython_purple}-}}}1
+		{?}{{{\color{ipython_purple}?}}}1,
+	%
+	identifierstyle=\color{black}\ttfamily,
+	commentstyle=\color{ipython_cyan}\ttfamily,
+	stringstyle=\color{ipython_red}\ttfamily,
+	keepspaces=true,
+	showspaces=false,
+	showstringspaces=false,
+	rulecolor=\color{ipython_frame},
+	frame=single,
+	frameround={t}{t}{t}{t},
+	framexleftmargin=6mm,
+	numbers=left,
+	numberstyle=\tiny\color{halfgray},
+	backgroundcolor=\color{ipython_bg},
+	% extendedchars=true,
+	basicstyle=\scriptsize,
+	keywordstyle=\color{ipython_green}\ttfamily,
+}
+
+
+% -----------------------------------------------------------------------------
+% Glossary compilation
+% -----------------------------------------------------------------------------
+
+% IMPORTANT: You must execute the following command in the terminal to compile
+% the glossary: `makeglossaries thesis`
+\makeglossaries
+\newacronym{abnt}{ABNT}{Brazilian Association of Technical Standards}
+\newacronym{abnt-dk}{ABNT}{Den Brasilianske Standardiseringsorganisation}
+\newacronym{itu}{ITU}{IT University of Copenhagen}
+
+
+% -----------------------------------------------------------------------------
+% Main Document
+% -----------------------------------------------------------------------------
+\begin{document}
+
+
+% -----------------------------------------------------------------------------
+% Basic Information
+% -----------------------------------------------------------------------------
+\university{IT University of Copenhagen}       % University name
+\departament{Computer Science Department}      % Department name
+\program{Ph.D. Programme in Computer Science}  % Bachelor's Programme in Software Development, Master's Programme in Software Design, or Ph.D. Programme in Computer Science
+\maintitle{Title of the Thesis}      % Main title
+\subtitle{Ph.D. Thesis}              % Bachelor's Thesis, or Master's Thesis
+\author{Student's Name}              % Author's name
+\supervisor{Supervisor's Name}     	 % Supervisor's name
+\cosupervisor{Co-Supervisor's Name}  % Co-Supervisor's name
+\city{Copenhagen -- Denmark}         % City and country
+\info{November, 2024}                % Month and year
+
+% Previous academic degrees
+\previousDegrees{B.Sc. University of the West of Santa Catarina, 2005}
+				{M.Sc. Technological Institute of Aeronautics, 2008}
+
+% Examination committee members
+\committeeMemberA{Committee Member A}
+\committeeMemberB{Committee Member B}
+\committeeMemberC{Committee Member C}
+
+
+% -----------------------------------------------------------------------------
+% Dedication
+% -----------------------------------------------------------------------------
+\dedication{This Ph.D. thesis is dedicated to all the \LaTeX~errors that tested my patience, the compiler warnings that kept me humble, and the endless debug sessions that taught me resilience. Without them, this journey would have been far too easy-and far less memorable.
+
+And to coffee, for being the true unsung hero of this endeavor.}
+
+
+% -----------------------------------------------------------------------------
+% Epigraph
+% -----------------------------------------------------------------------------
+\epigraph{``With regard to performance, commitment, effort,\\
+	dedication, there is no middle ground.\\
+	Or you do something very well or not at all.''\\}{\\
+	Ayrton Senna do Brasil (1960-1994)}
+
+
+% -----------------------------------------------------------------------------
+% Cover and Preliminaries
+% -----------------------------------------------------------------------------
+
+% Generate the cover page
+\cover
+
+% Additional preliminary pages
+\coversheet  % Cover sheet
+
+\approvalsheet  % Approval sheet
+
+\dedicationpage  % Dedication page
+
+% Acknowledgment section
+\acknowledgment{Gratitude is one of the noblest feelings of a man. Thus, I could not fail to mention that the accomplishment of this work is the result of the collaboration of many people. I would like to express my gratitude in a particular way.
+
+I would like to thank the one person without whom this document would never have seen the light of day: me. Yes, that's right--me. For not only creating this \LaTeX~template, but also generously sharing it with the students of this esteemed university. Truly, my brilliance knows no bounds, and my magnanimity knows no limits.
+
+I must also thank my coffee mug, which stood loyally by my side through countless lines of code, offering solace and caffeination in equal measure. Finally, a nod to my keyboard, whose steadfast resilience endured my furious typing as I resolved bugs and made this template a reality.
+
+To the students who will use this template: you're welcome.}
+\acknowledgmentpage  % Acknowledgment page
+
+% Epigraph page
+\epigraphpage
+
+
+% -----------------------------------------------------------------------------
+% Abstract
+% -----------------------------------------------------------------------------
+\begin{abstract}
+This document introduces a custom \LaTeX~template designed to simplify students' lives at IT University of Copenhagen, empowering them to create beautifully formatted academic documents with minimal effort. The template encapsulates the \acrfull{abnt} formatting guidelines while incorporating features that enhance usability, adaptability, and visual appeal. By providing this template, we aim to reduce formatting-related stress, encourage consistent document presentation, and gently guide students into the wonderful (and occasionally maddening) world of \LaTeX. Whether you are writing a thesis, report, or any academic work, this template is your steadfast companion. Just don't forget to thank the creator in your acknowledgments.\\
+\textbf{Keywords:} \LaTeX, template, thesis, computer science, IT University of Copenhagen.
+\end{abstract}
+
+% Resume section (in Danish)
+\begin{resume}
+Dette dokument introducerer en skr{\ae}ddersyet \LaTeX-skabelon, der er designet til at g{\o}re livet lettere for studerende p{\aa} IT-Universitetet i K{\o}benhavn. Skabelonen g{\o}r det muligt for dem at skabe smukt formaterede akademiske dokumenter med minimal indsats. Skabelonen overholder retningslinjerne fra \acrfull{abnt-dk} og indeholder samtidig funktioner, der forbedrer brugervenlighed, tilpasning og {\ae}stetik. Med denne skabelon str{\ae}ber vi efter at reducere stress forbundet med formatering, fremme ensartet pr{\ae}sentation af dokumenter og blidt introducere de studerende til den fantastiske (og til tider frustrerende) verden af \LaTeX. Uanset om du skriver en afhandling, en rapport eller et andet akademisk arbejde, er denne skabelon din trofaste f{\o}lgesvend. Husk blot at takke skaberen i dine taksigelser.\\
+\textbf{N{\o}gleord:} \LaTeX, skabelon, afhandling, datalogi, IT-Universitetet i K{\o}benhavn.
+\end{resume}
+
+
+% -----------------------------------------------------------------------------
+% Pre-Textual Elements
+% -----------------------------------------------------------------------------
+\listoffigures                                            % List of Figures
+\listoftables                                             % List of Tables
+\printglossary[title=List of Acronyms,type=\acronymtype]  % List of Acronyms
+\contents                                                 % Table of contents
+
+
+% -----------------------------------------------------------------------------
+% Chapters
+% -----------------------------------------------------------------------------
+
+% Part I: Foundations and Context.
+\part{Foundations and Context}\label{par:introduction}
+\input{chapters/part01/introduction}
+\input{chapters/part01/review}
+
+% Part II: Research Methodology and Execution.
+\part{Research Methodology and Execution}\label{par:methodology}
+\input{chapters/part02/methodology}
+
+% Part III: Results and Interpretation.
+\part{Results and Interpretation}\label{par:results}
+\input{chapters/part03/results}
+\input{chapters/part03/discussion}
+
+% Part IV: Conclusion and Outlook.
+\part{Conclusion and Outlook}\label{par:conclusions}
+\input{chapters/part04/conclusions}
+
+
+% -----------------------------------------------------------------------------
+% References
+% -----------------------------------------------------------------------------
+\makeatletter
+\renewcommand\@biblabel[1]{{\parbox{0.8cm}{[#1]}}}
+\makeatother
+\bibliographystyle{ieeetr}
+\bibliography{references}
+
+
+% -----------------------------------------------------------------------------
+% Annexes
+% -----------------------------------------------------------------------------
+\annex
+
+% Annex A: Standard Front Page.
+\chapter{Standard Front Page}\label{ann:front-page}
+\includepdf[pages=-]{annexes/front-page.pdf}
+
+
+% -----------------------------------------------------------------------------
+% Appendices
+% -----------------------------------------------------------------------------
+\appendix
+
+% Appendix A: Source Code.
+\input{appendices/source-code}
+
+
+% -----------------------------------------------------------------------------
+% End of the Document
+% -----------------------------------------------------------------------------
+\end{document}

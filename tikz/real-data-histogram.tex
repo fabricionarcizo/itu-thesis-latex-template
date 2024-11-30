@@ -1,0 +1,351 @@
+\tikzsetnextfilename{real-data-histogram}
+\readarraysepchar{,}
+
+\begin{tikzpicture}
+	\centering
+	\begin{groupplot}[
+		group style={
+			group size=3 by 2,
+			horizontal sep=1.3cm,
+			vertical sep=1.5cm
+		},
+		label style={font=\large},
+		tick label style={font=\large}
+	]
+			
+		\nextgroupplot[ybar,
+			ylabel={Normalized Density},
+			ymin=-0.025,
+			ymax=0.25,
+			xmin=-5,
+			xmax=5,
+			major x tick style = {opacity=0},
+			xticklabel=\pgfmathprintnumber\tick$^\circ$,
+			y tick label style={
+				/pgf/number format/.cd,
+				fixed,
+				fixed zerofill,
+				precision=2
+			}
+		]
+
+			\node[anchor=north] at (20pt, 157pt){$H_e^s$};
+
+			\addplot [ybar,
+				fill=black!20,
+				bar width=0.012\textwidth
+			] plot [
+				error bars/.cd,
+				y dir=both,
+				y explicit
+			] table [
+				x=bins,
+				y=hist,
+				y error=errors,
+				col sep=comma
+			] {data/01_real_01_homography_00_original.csv};
+			
+			\addplot [
+				smooth,
+				pattern=north east lines
+			] table [
+				x=x,
+				y=y,
+				col sep=comma,
+				restrict x to domain=-0.5:0.5
+			] {data/01_real_01_homography_00_original_sts.csv} \closedcycle;
+
+			\addplot [
+				color=black!50,
+				smooth,
+				tension=0.7,
+				very thick
+			] table [
+				x=x,
+				y=y,
+				col sep=comma
+			] {data/01_real_01_homography_00_original_sts.csv};
+
+		\nextgroupplot[ybar,
+			ymin=-0.025,
+			ymax=0.25,
+			xmin=-5,
+			xmax=5,
+			major x tick style = {opacity=0},
+			xticklabel=\pgfmathprintnumber\tick$^\circ$,
+			y tick label style={
+				/pgf/number format/.cd,
+				fixed,
+				fixed zerofill,
+				precision=2
+			}
+		]
+
+			\node[anchor=north] at (20pt, 157pt){$H_e^{s+}$};
+
+			\addplot [ybar,
+				fill=black!20,
+				bar width=0.012\textwidth
+			] plot [
+				error bars/.cd,
+				y dir=both,
+				y explicit
+			] table [
+				x=bins,
+				y=hist,
+				y error=errors,
+				col sep=comma
+			] {data/01_real_01_homography_01_camera.csv};
+			
+			\addplot [
+				smooth,
+				pattern=north east lines
+			] table [
+				x=x,
+				y=y,
+				col sep=comma,
+				restrict x to domain=-0.5:0.5
+			] {data/01_real_01_homography_01_camera_sts.csv} \closedcycle;
+
+			\addplot [
+				color=black!50,
+				smooth,
+				tension=0.7,
+				very thick
+			] table [
+				x=x,
+				y=y,
+				col sep=comma
+			] {data/01_real_01_homography_01_camera_sts.csv};
+
+		\nextgroupplot[ybar,
+			ymin=-0.025,
+			ymax=0.25,
+			xmin=-5,
+			xmax=5,
+			major x tick style = {opacity=0},
+			xticklabel=\pgfmathprintnumber\tick$^\circ$,
+			y tick label style={
+				/pgf/number format/.cd,
+				fixed,
+				fixed zerofill,
+				precision=2
+			}
+		]
+
+			\node[anchor=north] at (20pt, 157pt){$H_e^{s*}$};
+			
+			\addplot [ybar,
+				fill=black!20,
+				bar width=0.012\textwidth
+			] plot [
+				error bars/.cd,
+				y dir=both,
+				y explicit
+			] table [
+				x=bins,
+				y=hist,
+				y error=errors,
+				col sep=comma
+			] {data/01_real_01_homography_02_distortion.csv};
+			
+			\addplot [
+				smooth,
+				pattern=north east lines
+			] table [
+				x=x,
+				y=y,
+				col sep=comma,
+				restrict x to domain=-0.5:0.5
+			] {data/01_real_01_homography_02_distortion_sts.csv} \closedcycle;
+			
+			\addplot [
+				color=black!50,
+				smooth,
+				tension=0.7,
+				very thick
+			] table [
+				x=x,
+				y=y,
+				col sep=comma
+			] {data/01_real_01_homography_02_distortion_sts.csv};
+
+		\nextgroupplot[ybar,
+			xlabel=Vertical Gaze Error (\textit{deg}),
+			ylabel={Normalized Density},
+			ymin=-0.025,
+			ymax=0.25,
+			xmin=-5,
+			xmax=5,
+			major x tick style = {opacity=0},
+			xticklabel=\pgfmathprintnumber\tick$^\circ$,
+			y tick label style={
+				/pgf/number format/.cd,
+				fixed,
+				fixed zerofill,
+				precision=2
+			},
+			x label style={at={(0.5, -0.05)}}
+		]
+		
+			\node[anchor=north] at (20pt, 157pt){$P_e^s$};
+
+			\addplot [ybar,
+				fill=black!20,
+				bar width=0.012\textwidth
+			] plot [
+				error bars/.cd,
+				y dir=both,
+				y explicit
+			] table [
+				x=bins,
+				y=hist,
+				y error=errors,
+				col sep=comma
+			] {data/01_real_00_interpolate_00_original.csv};
+
+			\addplot [
+				smooth,
+				pattern=north east lines
+			] table [
+				x=x,
+				y=y,
+				col sep=comma,
+				restrict x to domain=-0.5:0.5
+			] {data/01_real_00_interpolate_00_original_sts.csv} \closedcycle;
+	
+			\addplot [
+				color=black!50,
+				smooth,
+				tension=0.7,
+				very thick
+			] table [
+				x=x,
+				y=y,
+				col sep=comma
+			] {data/01_real_00_interpolate_00_original_sts.csv};
+
+		\nextgroupplot[ybar,
+			xlabel=Vertical Gaze Error (\textit{deg}),
+			ymin=-0.025,
+			ymax=0.25,
+			xmin=-5,
+			xmax=5,
+			major x tick style = {opacity=0},
+			xticklabel=\pgfmathprintnumber\tick$^\circ$,
+			y tick label style={
+				/pgf/number format/.cd,
+				fixed,
+				fixed zerofill,
+				precision=2
+			},
+			x label style={at={(0.5, -0.05)}},
+			legend style={at={($(0,0)+(3.4cm,-2.0cm)$)},legend columns=3,fill=none,draw=black,anchor=center,align=center}
+		]
+
+			\node[anchor=north] at (20pt, 157pt){$P_e^{s+}$};
+		
+			\addplot [ybar,
+				fill=black!20,
+				bar width=0.012\textwidth
+			] plot [
+				error bars/.cd,
+				y dir=both,
+				y explicit
+			] table [
+				x=bins,
+				y=hist,
+				y error=errors,
+				col sep=comma
+			] {data/01_real_00_interpolate_01_camera.csv};
+			\addlegendentry{\large{Experimental Real Data}};
+			
+			\addplot [
+				smooth,
+				pattern=north east lines,
+				area legend
+			] table [
+				x=x,
+				y=y,
+				col sep=comma,
+				restrict x to domain=-0.5:0.5
+			] {data/01_real_00_interpolate_01_camera_sts.csv} \closedcycle;
+			\addlegendentry{\large{High-Accuracy Range}};
+			
+			\addplot [
+				color=black!50,
+				smooth,
+				tension=0.7,
+				very thick,
+				line legend
+			] table [
+				x=x,
+				y=y,
+				col sep=comma
+			] {data/01_real_00_interpolate_01_camera_sts.csv};
+			\addlegendentry{\large{Gaussian Fitting}};
+			
+		\nextgroupplot[ybar,
+			xlabel=Vertical Gaze Error (\textit{deg}),
+			ymin=-0.025,
+			ymax=0.25,
+			xmin=-5,
+			xmax=5,
+			major x tick style = {opacity=0},
+			xticklabel=\pgfmathprintnumber\tick$^\circ$,
+			y tick label style={
+				/pgf/number format/.cd,
+				fixed,
+				fixed zerofill,
+				precision=2
+			},
+			x label style={at={(0.5, -0.05)}}
+		]
+
+			\node[anchor=north] at (20pt, 157pt){$P_e^{s*}$};
+			
+			\addplot [ybar,
+				fill=black!20,
+				bar width=0.012\textwidth
+			] plot [
+				error bars/.cd,
+				y dir=both,
+				y explicit
+			] table [
+				x=bins,
+				y=hist,
+				y error=errors,
+				col sep=comma
+			] {data/01_real_00_interpolate_02_distortion.csv};
+			
+			\addplot [
+				smooth,
+				pattern=north east lines
+			] table [
+				x=x,
+				y=y,
+				col sep=comma,
+				restrict x to domain=-0.5:0.5
+			] {data/01_real_00_interpolate_02_distortion_sts.csv} \closedcycle;
+			
+			\addplot [
+				color=black!50,
+				smooth,
+				tension=0.7,
+				very thick
+			] table [
+				x=x,
+				y=y,
+				col sep=comma
+			] {data/01_real_00_interpolate_02_distortion_sts.csv};
+
+	\end{groupplot}
+	
+	\node (A) at ([yshift=0.3cm]group c1r1.north) {\large (a)};
+	\node (B) at ([yshift=0.3cm]group c2r1.north) {\large (b)};
+	\node (C) at ([yshift=0.3cm]group c3r1.north) {\large (c)};
+	\node (D) at ([yshift=0.3cm]group c1r2.north) {\large (d)};
+	\node (E) at ([yshift=0.3cm]group c2r2.north) {\large (e)};
+	\node (F) at ([yshift=0.3cm]group c3r2.north) {\large (f)};
+
+\end{tikzpicture}

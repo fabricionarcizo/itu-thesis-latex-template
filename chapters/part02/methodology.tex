@@ -1,0 +1,98 @@
+%
+% MIT License
+%
+% Copyright (c) 2024 Fabricio Batista Narcizo.
+%
+% Permission is hereby granted, free of charge, to any person obtaining a copy
+% of this software and associated documentation files (the "Software"), to deal
+% in the Software without restriction, including without limitation the rights
+% to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+% copies of the Software, and to permit persons to whom the Software is
+% furnished to do so, subject to the following conditions:
+%
+% The above copyright notice and this permission notice shall be included in
+% all copies or substantial portions of the Software.
+%
+% THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+% IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+% FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+% AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+% LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+% OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
+% SOFTWARE.
+%
+
+% Methodology Chapter.
+\chapter{Methodology}\label{chap:methodology}
+\lettrine[lines=3]{T}{he} methodology chapter describes the approaches, tools, and processes you used to conduct your research. It should provide sufficient detail for the reader to understand how you gathered and analyzed data, making it possible for others to replicate your study if needed. This chapter demonstrates the rigor and validity of your research.
+
+Start this chapter with a brief explanation of its purpose. Provide a roadmap for the reader. For example: ``\textit{This chapter outlines the research design, data collection methods, implementation details, evaluation metrics, and ethical considerations of this study. It provides a comprehensive explanation of the processes used to address the research questions presented in Section~\ref{sec:research-questions}}.''
+
+\section{Research Design and Approach}\label{sec:research-design}
+Describe the overall design of your study. Explain whether it is experimental, observational, qualitative, or quantitative, and justify why this approach is appropriate for addressing your research questions.
+
+If necessary, you can include figures or diagrams to illustrate the research design. You might include a flowchart showing the sequence of steps in your study or a diagram of the experimental setup. You must insert figures after you cited them in the text, and their captions should be below the them. There are two alternatives to include figures in your document: 1) a single figure or 2) a figure with subfigures. The former is used when you want to include a single image, while the latter is used when you want to include multiple images in a single figure. For example, Figure~\ref{fig:flow-diagram} shows the diagram of a binocular eye feature detector that I developed during my Ph.D. research project~\cite{Narcizo2017}.
+\begin{figure}[htbp]
+    \centering
+    \includegraphics[width=0.8\linewidth]{flow-diagram.png}
+    \caption{The proposed eye feature detector using information from both eyes}
+    \label{fig:flow-diagram}
+\end{figure}
+
+On the other hand, Figure~\ref{fig:sub-figures} shows an example of a figure with subfigures. This figure includes two images side by side, each with its own caption. You can use subfigures to present related images or data together in a single figure. Figure~\ref{fig:sub-figure-a} shows an off-the-shelf head-mounted eye tracker I built during my Ph.D. research project, while Figure~\ref{fig:sub-figure-b} shows a participant of kayak experiments I performed to collect eye-tracking data of elite kayak/canoe athletes.
+\begin{figure}[!ht]
+    \centering
+    \begin{subfigure}[b]{0.49\textwidth}
+        \caption{This is the first subfigure}
+        \label{fig:sub-figure-a}
+        \includegraphics[width=1\linewidth]{kayak_hmet01.jpg}
+    \end{subfigure}
+    \begin{subfigure}[b]{0.49\textwidth}
+        \caption{This is the second subfigure}
+        \label{fig:sub-figure-b}
+        \includegraphics[width=1\linewidth]{kayak_hmet02.jpg}
+    \end{subfigure}
+    \caption{A head-mounted eye tracker prototype built with oﬀ-the-self hardware in a kayak helmet}
+    \label{fig:sub-figures}
+\end{figure}
+
+\section{Data Collection}\label{sec:data-collection}
+Provide a detailed description of how data was collected, including the datasets, tools, or systems used. Explain the sampling strategy, data sources, and data collection methods. If you conducted experiments, describe the experimental setup and procedures.
+
+For example, you might write: ``\textit{Data was collected from 100 participants using an online survey tool. Participants were recruited through social media advertisements and were asked to complete a series of tasks related to the study. The survey included Likert scale questions, open-ended responses, and demographic information.}''
+
+\subsection{Description of Datasets, Tools, or Systems Used}\label{subsec:datasets-tools}
+Include details about the datasets, their sources, and preprocessing steps if any. Mention tools or platforms you used, such as APIs, software, or hardware. For example: ``\textit{We collected data from the Twitter API using Python scripts. The dataset consisted of 10,000 tweets related to the topic of interest. We preprocessed the data by removing duplicates and filtering out irrelevant tweets.}''
+
+If necessary, you can include tables to present data collection details. Tables are useful for organizing large amounts of data in a structured format. For example, Table~\ref{tab:participants} shows a summary of the demographic information of the participants in the study.
+\input{tables/participants}
+
+In the case of a table with multiple columns, you can add the table in landscape. For example, Table~\ref{tab:participants-landscape} shows similar information as Table~\ref{tab:participants} but in a horizontal format.
+\input{tables/participants-landscape}
+
+If your table is too long to fit on a single page, you can use the \texttt{longtable} environment to create a table that spans multiple pages. For example, Table~\ref{tab:long-table} shows a \texttt{longtable} that continues on the next page.
+\input{tables/long-table}
+
+\section{Implementation Details}\label{sec:implementation-details}
+Explain the algorithms, frameworks, or models you implemented. Provide a step-by-step description of how the implementation was done, including programming languages, libraries, or tools. If you developed new methods or models, describe them in detail. For example: ``\textit{We implemented a convolutional neural network using \texttt{TensorFlow} and \texttt{Keras}. The model consisted of two convolutional layers followed by two fully connected layers. We trained the model on a GPU cluster using the \texttt{Adam} optimizer with a learning rate of $0.001$. Listing~\ref{lst:cnn} shows the architecture of the CNN model implemented in Python.}''
+\lstinputlisting[
+    language=Python,
+    belowcaptionskip=15pt,
+    label={lst:cnn},
+    caption={Convolutional neural network implemented in Python using TensorFlow and Keras.},
+    linerange={41-50}]{codes/cnn_model.py}
+
+\section{Evaluation Metrics}\label{sec:evaluation-metrics}
+Describe the metrics used to evaluate your results. Provide mathematical definitions if applicable. For example:
+
+The performance of the model is evaluated using accuracy, precision, recall, and F1-score, defined as:
+\begin{equation}
+    F1 = 2 \times \frac{\text{Precision} \times \text{Recall}}{\text{Precision} + \text{Recall}}.
+\end{equation}
+These metrics provide a comprehensive assessment of model performance.
+
+\section{Ethical Considerations}\label{sec:ethical-considerations}
+Discuss any ethical considerations related to your research. Explain how you addressed issues such as data privacy, informed consent, and participant anonymity. If your research involved human subjects, describe the steps you took to ensure their safety and well-being. For example: ``\textit{Participants were informed about the purpose of the study and provided written consent before participating. All data collected was anonymized to protect participant privacy. The study was approved by the Institutional Review Board (IRB) and followed ethical guidelines for research involving human subjects.}''
+
+\section{Summary}\label{sec:methodology-summary}
+Summarize the key points of the methodology chapter. Provide a brief overview of the research design, data collection methods, implementation details, evaluation metrics, and ethical considerations. This section should reinforce the importance of the methodology in ensuring the validity and reliability of your research.

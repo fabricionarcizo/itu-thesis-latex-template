@@ -1,0 +1,1189 @@
+%
+% MIT License
+%
+% Copyright (c) 2024 Fabricio Batista Narcizo.
+%
+% Permission is hereby granted, free of charge, to any person obtaining a copy
+% of this software and associated documentation files (the "Software"), to deal
+% in the Software without restriction, including without limitation the rights
+% to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+% copies of the Software, and to permit persons to whom the Software is
+% furnished to do so, subject to the following conditions:
+%
+% The above copyright notice and this permission notice shall be included in
+% all copies or substantial portions of the Software.
+%
+% THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+% IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+% FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+% AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+% LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+% OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
+% SOFTWARE.
+%
+
+
+% -----------------------------------------------------------------------------
+% LaTeX Kernel: ITU.sty
+% -----------------------------------------------------------------------------
+\NeedsTeXFormat{LaTeX2e}
+
+
+% -----------------------------------------------------------------------------
+% ITU Package (v0.8.2.20241130)
+% -----------------------------------------------------------------------------
+\ProvidesPackage{ITU}[2024/11/30]
+
+
+% -----------------------------------------------------------------------------
+% Imported Packages
+% -----------------------------------------------------------------------------
+\RequirePackage{ifthen}
+\RequirePackage[english]{babel}
+\RequirePackage[utf8]{inputenc}
+\RequirePackage{scrextend}
+\RequirePackage[acronym,nonumberlist]{glossaries}
+
+
+% -----------------------------------------------------------------------------
+% Setup packages and imported classes
+% -----------------------------------------------------------------------------
+\PassOptionsToClass{pnumromarab}{abnt}
+\PassOptionsToPackage{hyperindex=false}{hyperref}
+
+
+% -----------------------------------------------------------------------------
+% Global Setup
+% -----------------------------------------------------------------------------
+
+% This command makes LaTex recognizes the character @ (at) as a command.
+\makeatletter
+
+% This command formats the table numbers as X.Y. standard.
+\renewcommand{\thetable}{\thechapter.\arabic{table}}
+
+% Define a new element in the document (department).
+\providecommand{\ABNTdepartamentodata}{}
+\newcommand{\departamento}[1]{\renewcommand{\ABNTdepartamentodata}{#1}}
+
+% Define a new element in the document (program).
+\providecommand{\ABNTprogramadata}{}
+\newcommand{\programa}[1]{\renewcommand{\ABNTprogramadata}{#1}}
+
+% Define a new element in the document (work).
+\providecommand{\ABNTtrabalhodata}{}
+\newcommand{\trabalho}[1]{\renewcommand{\ABNTtrabalhodata}{#1}}
+
+% Translate the main commands to English.
+\newcommand{\university}[1]{\instituicao{#1}}
+\newcommand{\departament}[1]{\departamento{#1}}
+\newcommand{\program}[1]{\programa{#1}}
+\newcommand{\maintitle}[1]{\titulo{#1}}
+\newcommand{\subtitle}[1]{\trabalho{#1}}
+\renewcommand{\author}[1]{\autor{#1}}
+\newcommand{\supervisor}[1]{\orientador{#1}}
+\newcommand{\cosupervisor}[1]{\coorientador{#1}}
+\newcommand{\city}[1]{\local{#1}}
+\newcommand{\info}[1]{\data{#1}}
+\newcommand{\cover}[1]{\capa}
+\newcommand{\contents}{\sumario}
+\renewcommand{\annexname}{Annex}
+\newcommand{\coversheet}[1]{\folhaderosto}
+\newcommand{\approvalsheet}[1]{\folhaaprovacao}
+
+% Define new short commands.
+%\DeclareRobustCommand\onedot{\futurelet\@let@token\@onedot}
+%\def\@onedot{\ifx\@let@token.\else.\null\fi\xspace}
+%\def\eg{\emph{e.g}\onedot} \def\Eg{\emph{E.g}\onedot}
+%\def\ie{\emph{i.e}\onedot} \def\Ie{\emph{I.e}\onedot}
+%\def\cf{\emph{c.f}\onedot} \def\Cf{\emph{C.f}\onedot}
+%\def\etc{\emph{etc}\onedot} \def\vs{\emph{vs}\onedot}
+%\def\wrt{w.r.t\onedot} \def\dof{d.o.f\onedot}
+%\def\etal{\emph{et al}\onedot}
+\newcommand{\etal}{\emph{et al.}}
+
+% Setup the font style to the header elements.
+\renewcommand{\rightmarkformat}{\footnotesize}
+\renewcommand{\thepageformat}{\footnotesize}
+\renewcommand{\ABNTchapterfont}{\bfseries}
+\renewcommand{\ABNTtocchapterfont}{\bfseries}
+
+% Setup the font style to the document elements.
+\renewcommand{\instituicaoformat}{\huge}
+\renewcommand{\tituloformat}{\huge}
+\renewcommand{\autorformat}{\large}
+
+% Setup the font style to the new document elements.
+\providecommand{\departamentoformat}{\LARGE}
+\providecommand{\programaformat}{\Large}
+\providecommand{\trabalhoformat}{\normalsize}
+
+% Setup previous degrees.
+\providecommand{\masterDegree}{}
+\providecommand{\bachelorDegree}{}
+\newcommand{\previousDegrees}[2] {
+	\renewcommand{\masterDegree}{#2}
+    \renewcommand{\bachelorDegree}{#1}
+}
+
+% Setup the committee members.
+\providecommand{\committeeNameA}{}
+\providecommand{\committeeDataA}{}
+\newcommand{\committeeMemberA}[2][Chair]
+    {\renewcommand{\committeeNameA}{#2}
+     \renewcommand{\committeeDataA}{#1}}
+
+\providecommand{\committeeNameB}{}
+\providecommand{\committeeDataB}{}
+\newcommand{\committeeMemberB}[2][]
+    {\renewcommand{\committeeNameB}{#2}
+     \renewcommand{\committeeDataB}{#1}}
+
+\providecommand{\committeeNameC}{}
+\providecommand{\committeeDataC}{}
+\newcommand{\committeeMemberC}[2][]
+    {\renewcommand{\committeeNameC}{#2}
+     \renewcommand{\committeeDataC}{#1}}
+
+% Dedication.
+\providecommand{\dedicationdata}{}
+\newcommand{\dedication}[1]{\renewcommand{\dedicationdata}{#1}}
+\newcommand{\dedicationformat}{}
+
+% Acknowledgment.
+\providecommand{\acknowledgmentdata}{}
+\newcommand{\acknowledgment}[1]{\renewcommand{\acknowledgmentdata}{#1}}
+\newcommand{\acknowledgmentformat}{}
+\newcommand{\acknowledgmentname}{Acknowledgments}
+
+% Epigraph.
+\providecommand{\epigraphdata}{}
+\providecommand{\epigraphauthordata}{}
+\newcommand{\epigraph}[2]{\renewcommand{\epigraphdata}{#1}\renewcommand{\epigraphauthordata}{#2}}
+\newcommand{\epigraphformat}{\itshape}
+\newcommand{\epigraphauthorformat}{\hfill}
+
+
+% -----------------------------------------------------------------------------
+% Commands Setup
+% -----------------------------------------------------------------------------
+
+% Customize the header and footer of plain pages (used for chapter title pages, etc.)
+\renewcommand{\ps@plainheader}{%
+    % Clear the footers for both odd and even pages
+    \renewcommand{\@oddfoot}{} % No footer on odd pages
+    \renewcommand{\@evenfoot}{} % No footer on even pages
+
+    % Clear the headers for both odd and even pages
+    \renewcommand{\@oddhead}{} % No header on odd pages
+    \renewcommand{\@evenhead}{} % No header on even pages
+}
+
+% Define the header and footer styles for chapter pages
+\newcommand{\ps@itu}{%
+    % Define the footer for odd pages
+    \renewcommand{\@oddfoot}{%
+        \makebox[\textwidth]{%
+            \raisebox{-.5ex}{\footnotesize\ABNTtrabalhodata}% Footer content (e.g., work date)
+        }%
+    }%
+    
+    % Define the footer for even pages
+    \renewcommand{\@evenfoot}{%
+        \makebox[\textwidth]{%
+            \raisebox{-.5ex}{\footnotesize\ABNTtrabalhodata}% Footer content (e.g., work date)
+        }%
+    }%
+    
+    % Define the header for odd pages
+    \renewcommand{\@oddhead}{%
+        \underline{% Add underline to the header
+            \makebox[\textwidth]{%
+                \raisebox{-.5ex}{}% Placeholder for additional adjustments
+                {\rightmarkformat\rightmark}% Right-aligned section/chapter title
+                \hfill% Space between title and page number
+                {\thepageformat\thepage}% Page number in specified format
+            }%
+        }%
+    }%
+    
+    % Define the header for even pages
+    \renewcommand{\@evenhead}{%
+        \underline{% Add underline to the header
+            \makebox[\textwidth]{%
+                \raisebox{-.5ex}{}% Placeholder for additional adjustments
+                {\thepageformat\thepage}% Page number in specified format
+                \hfill% Space between page number and title
+                {\leftmarkformat\leftmark}% Left-aligned section/chapter title
+            }%
+        }%
+    }%
+    
+    % Update the behavior for marking headers
+    \let\@mkboth\ABNTmarkboth% Use custom marking behavior
+    
+    % Customize chapter-level marking
+    \renewcommand{\chaptermark}[1]{%
+        \markboth{%
+            \ifnum\c@secnumdepth >\m@ne% Check section depth for numbering
+                \thechapter\ % Include chapter number if applicable
+            \fi
+            ##1% Chapter title
+        }{%
+            \ifnum\c@secnumdepth >\m@ne% Check section depth for numbering
+                \thechapter\ % Include chapter number if applicable
+            \fi
+            ##1% Chapter title
+        }%
+    }%
+    
+    % Customize section-level marking
+    \renewcommand{\sectionmark}[1]{%
+        \markright{%
+            \ifnum\c@secnumdepth >\z@% Check section depth for numbering
+                \thesection\ % Include section number if applicable
+            \fi
+            ##1% Section title
+        }%
+    }%
+}
+
+% Define the formatting for parts in the table of contents
+\def\@part[#1]#2{%
+    \ifnum \c@secnumdepth > -2\relax
+        % If the section numbering depth allows parts to be numbered
+        \refstepcounter{part}% Increment the part counter
+        \ABNTaddcontentsline{toc}{part}{{\partname~\thepart}~ #1}% Add the part to the TOC with numbering
+    \else
+        % If section numbering depth does not include parts
+        \resetsubcounters{part}% Reset subordinate counters
+        \ABNTaddcontentsline{toc}{part}{#1}% Add the part to the TOC without numbering
+    \fi
+
+    % Clear the header and footer for part pages
+    \markboth{}{}%
+
+    % Format the part title on the part page
+    {\centering% Center the part title
+        \interlinepenalty \@M% Prevent page breaks between lines in the title
+        \normalfont% Use the normal font style
+
+        \ifnum \c@secnumdepth > -2\relax
+            % If the section numbering depth allows part numbering
+            \ABNTchapterfont\huge% Use custom font and large size for the part number
+            \ifthenelse{\boolean{ABNTcapchap}}% Check if capitalization is enabled
+                {\MakeUppercase{\partname~\thepart}}% Use uppercase for the part name and number
+                {\partname~\thepart}% Regular case for the part name and number
+            \par% Start a new paragraph
+            \vskip 20\p@% Add vertical space after the part number
+        \fi
+
+        \ABNTchapterfont\Huge% Use custom font and very large size for the part title
+        \ifthenelse{\boolean{ABNTcapchap}}% Check if capitalization is enabled
+            {\MakeUppercase{#2}}% Use uppercase for the part title
+            {#2}% Regular case for the part title
+        \par% End the title with a new paragraph
+    }%
+    \@endpart% End the part
+}
+
+% Define a command to place content (e.g., a chapter picture) at a specific position
+% Arguments:
+%   #1: X-coordinate (horizontal position)
+%   #2: Y-coordinate (vertical position)
+%   #3: Content to be placed (e.g., picture or text)
+\newcommand{\putat}[3]{%
+    \begin{picture}(0,0)(0,0)% Start a zero-sized picture environment
+        \put(#1,#2){#3}% Place the content at the specified coordinates
+    \end{picture}%
+}
+
+% Redefine the \chapter command to customize chapter formatting
+\renewcommand\chapter{%
+    % Clear the page before a new chapter, handling 'openright' option
+    \if@openright
+        \cleardoublepage% Start new chapters on the right page
+    \else
+        \clearpage% Start new chapters on the next page
+    \fi
+
+    % Add a custom chapter image at a specific position
+    \putat{-25}{-121}{%
+        \includegraphics[scale=0.08]{style/chapter.png}% Include the chapter image
+    }%
+
+    % Apply the specific page style for the chapter title page
+    \thispagestyle{\chaptertitlepagestyle}%
+
+    % Handle settings for pre-textual and post-TOC conditions
+    \ifthenelse{\boolean{ABNTinpretext}}{% Check if in pre-text section
+        \ifthenelse{\boolean{ABNTaftertoc}}{% Check if after the table of contents
+            \setboolean{ABNTinpretext}{false}% Update pre-text flag
+            \ABNTBeginOfTextualPart% Trigger start of textual part
+        }{}% No action if not after TOC
+    }{}% No action if not in pre-text
+
+    % Prevent floats from appearing at the top of the page
+    \global\@topnum\z@
+
+    % Disable indentation after chapter titles
+    \@afterindentfalse
+
+    % Define sectioning behavior for numbered and unnumbered chapters
+    \secdef\@chapter\@schapter
+}
+
+% Redefine the \pretextualchapter command to customize pre-textual chapter formatting
+\renewcommand\pretextualchapter{%
+    % Clear the page before starting a new pre-textual chapter, respecting 'openright' option
+    \if@openright
+        \cleardoublepage% Start on the right page
+    \else
+        \clearpage% Start on the next available page
+    \fi
+
+    % Add a custom header image for pre-textual chapters at a specified position
+    \putat{-25}{-121}{%
+        \includegraphics[scale=0.08]{style/header.png}% Include the header image
+    }%
+
+    % Add vertical space below the image
+    \vspace{6pt}%
+
+    % Apply the specific page style for the pre-textual chapter title page
+    \thispagestyle{\chaptertitlepagestyle}%
+
+    % Prevent floats from appearing at the top of the page
+    \global\@topnum\z@
+
+    % Disable indentation after pre-textual chapter titles
+    \@afterindentfalse%
+
+    % Call the unnumbered chapter sectioning command
+    \@schapter%
+}
+
+% Define the layout for the chapter name and number
+\def\@makechapterhead#1{
+    {
+        % Add vertical spacing before the chapter heading
+        \vspace*{-90pt}\par
+        \begin{center}
+            % Place the chapter name
+            \hspace{370pt}% Adjust horizontal position for chapter name
+            \Large{\chaptername\par}% Set the chapter name in large font
+
+            % Place the chapter number
+            \hspace{370pt}% Adjust horizontal position for chapter number
+            \resizebox{!}{1cm}{\thechapter\par}% Resize chapter number to 1cm height
+        \end{center}
+        % Reset vertical spacing after the heading
+        \vspace*{0pt}\par
+    }
+    {
+        % Style and format the chapter title
+        \centering% Center the chapter title
+        \normalfont% Use normal font style
+        \ABNTchaptersize\ABNTchapterfont% Apply custom size and font for the chapter title
+
+        % Check if capitalization is enabled for the chapter title
+        \ifthenelse{\boolean{ABNTcapchap}}{
+            \MakeUppercase{#1}% Convert chapter title to uppercase if enabled
+        }{
+            #1% Keep chapter title as is if capitalization is disabled
+        }
+        \par% End the chapter title
+    }
+    % Add vertical spacing after the chapter heading
+    \vspace{120pt}\par
+}
+
+% Define the layout for appendix (or annex) chapter name and number
+\def\@makeanapchapterhead#1{
+    {
+        % Check if appendix/annex has an indicative indent
+        \ifthenelse{\boolean{ABNTAnApIndicativoIndent}}{
+            % Check if the appendix/annex should use capitalization
+            \ifthenelse{\boolean{ABNTCapAnnexAppendix}}{
+                % Capitalized format
+                \vspace*{-90pt}\par
+                \begin{center}
+                    \hspace{370pt}% Adjust horizontal position
+                    \Large{\anapchaptername\par}% Display appendix/annex name
+                    \hspace{370pt}% Adjust horizontal position
+                    \resizebox{!}{1cm}{\thechapter\par}% Display chapter number
+                \end{center}
+                \vspace*{0pt}\par
+            }{
+                % Non-capitalized format
+                \vspace*{-90pt}\par
+                \begin{center}
+                    \hspace{370pt}% Adjust horizontal position
+                    \Large{\anapchaptername\par}% Display appendix/annex name
+                    \hspace{370pt}% Adjust horizontal position
+                    \resizebox{!}{1cm}{\thechapter\par}% Display chapter number
+                \end{center}
+                \vspace*{0pt}\par
+            }
+        }{}
+
+        % Add vertical spacing before the content
+        \vspace*{-13pt}
+
+        % Create a list for content formatting
+        \begin{list}{}{
+            \centering\normalfont\ABNTchaptersize\ABNTchapterfont% Apply custom size and font
+            \setlength{\listparindent}{0cm}% Remove paragraph indentation
+            \setlength{\itemindent}{-\ABNTanapindent}% Adjust item indentation
+            \setlength{\rightmargin}{0cm}% Remove right margin
+            \setlength{\leftmargin}{\ABNTanapindent}% Set left margin
+            \setlength{\parsep}{0pt}% Remove additional spacing
+        }
+            \item
+            % Check if a title (#1) is provided
+            \ifthenelse{\equal{#1}{}}{
+                % If no title, display the appendix/annex name and number
+                \ifthenelse{\boolean{ABNTCapAnnexAppendix}}{
+                    \MakeUppercase{\anapchaptername}% Uppercase the name if applicable
+                }{
+                    \anapchaptername% Regular case for the name
+                }
+                \thechapter \ABNTaposindicativoanap% Display the chapter number
+            }{
+                % If a title is provided, format it
+                \ifthenelse{\boolean{ABNTCapAnnexAppendix}}{
+                    \centering\ABNTaposindicativoanap% Center the indicative append
+                    \ifthenelse{\boolean{ABNTcapchap}}{
+                        \vbox{\color{black} #1}\par% Uppercase title if enabled
+                    }{
+                        \vbox{\color{black} #1}\par% Regular case title
+                    }
+                }{}
+            }
+        \end{list}
+
+        % Add vertical spacing after the content
+        \par\vspace{107pt}
+    }
+}
+
+% Define the appendix/annex separator
+\renewcommand*{\ABNTtravessao}{--}
+
+
+% -----------------------------------------------------------------------------
+% Table of Contents Setup
+% -----------------------------------------------------------------------------
+
+% Redefine the \tableofcontents command
+\renewcommand{\tableofcontents}{
+    % Handle two-column formatting
+    \ifthenelse{\boolean{@twocolumn}}{
+        \setboolean{ABNTrestorecol}{true}% Save the two-column state
+        \onecolumn% Switch to single-column layout
+    }{
+        \setboolean{ABNTrestorecol}{false}% No need to restore two-column state
+    }
+
+    % Clear the page before starting the table of contents, respecting 'openright' option
+    \if@openright
+        \cleardoublepage% Start on the right page
+    \else
+        \clearpage% Start on the next available page
+    \fi
+
+    % Add a custom header image
+    \putat{-25}{-121}{%
+        \includegraphics[scale=0.08]{style/header.png}% Include the header image
+    }%
+
+    % Add vertical space below the header
+    \vspace{6pt}%
+
+    % Apply the specific page style for the table of contents
+    \thispagestyle{\chaptertitlepagestyle}%
+
+    % Prevent floats from appearing at the top of the page
+    \global\@topnum\z@
+
+    % Disable indentation after the table of contents heading
+    \@afterindentfalse%
+
+    % Add the contents heading
+    \@makeschapterhead{\contentsname}% Use the predefined contents name
+    \@afterheading% Ensure proper spacing after the heading
+
+    % Update the headers to reflect the table of contents
+    \@mkboth{\contentsname}{\contentsname}%
+
+    % Add vertical spacing before the contents list
+    \vspace{65pt}%
+
+    % Set the page style for the table of contents to be empty
+    \thispagestyle{empty}%
+
+    % Begin the table of contents
+    \@starttoc{toc}%
+
+    % Restore two-column layout if it was active before
+    \ifthenelse{\boolean{ABNTrestorecol}}{
+        \twocolumn% Switch back to two-column layout
+    }{}
+
+    % Clear the page after the table of contents, respecting 'openright' option
+    \if@openright
+        \cleardoublepage% Start on the right page
+    \else
+        \clearpage% Start on the next available page
+    \fi
+
+    % Mark that the table of contents has been processed
+    \setboolean{ABNTaftertoc}{true}%
+}
+
+% Define an alias for the table of contents command
+\let\sumario\tableofcontents\relax
+
+% Redefine the \listoffigures command
+\renewcommand{\listoffigures}{
+    % Handle two-column formatting
+    \ifthenelse{\boolean{@twocolumn}}{
+        \setboolean{ABNTrestorecol}{true}% Save the two-column state
+        \onecolumn% Switch to single-column layout
+    }{
+        \setboolean{ABNTrestorecol}{false}% No need to restore two-column state
+    }
+
+    % If hyperlinked TOC is enabled, adjust the chapter type
+    \ifthenelse{\boolean{ABNThypertoc}}{
+        \renewcommand{\chaptertype}{listoffigures.}% Set chapter type for hyperlinks
+    }{}
+
+    % Add the pretextual chapter heading for the list of figures
+    \pretextualchapter{\listfigurename}
+
+    % Add vertical spacing before the list of figures
+    \vspace{75pt}
+
+    % Reset chapter type after the heading if hyperlinked TOC is enabled
+    \ifthenelse{\boolean{ABNThypertoc}}{
+        \renewcommand{\chaptertype}{}
+    }{}
+
+    % Start the table of contents for the list of figures
+    \@starttoc{lof}
+
+    % Restore two-column layout if it was active before
+    \ifthenelse{\boolean{ABNTrestorecol}}{
+        \twocolumn% Switch back to two-column layout
+    }{}
+}
+
+% Define an alias for \listoffigures as \listadefiguras
+\let\listadefiguras\listoffigures\relax
+
+% Redefine the \listoftables command
+\renewcommand\listoftables{
+    % Handle two-column formatting
+    \ifthenelse{\boolean{@twocolumn}}{
+        \setboolean{ABNTrestorecol}{true}% Save the two-column state
+        \onecolumn% Switch to single-column layout
+    }{
+        \setboolean{ABNTrestorecol}{false}% No need to restore two-column state
+    }
+
+    % If hyperlinked TOC is enabled, adjust the chapter type
+    \ifthenelse{\boolean{ABNThypertoc}}{
+        \renewcommand{\chaptertype}{listoftables.}% Set chapter type for hyperlinks
+    }{}
+
+    % Add the pretextual chapter heading for the list of tables
+    \pretextualchapter{\listtablename}
+
+    % Add vertical spacing before the list of tables
+    \vspace{75pt}
+
+    % Reset chapter type after the heading if hyperlinked TOC is enabled
+    \ifthenelse{\boolean{ABNThypertoc}}{
+        \renewcommand{\chaptertype}{}
+    }{}
+
+    % Start the table of contents for the list of tables
+    \@starttoc{lot}
+
+    % Restore two-column layout if it was active before
+    \ifthenelse{\boolean{ABNTrestorecol}}{
+        \twocolumn% Switch back to two-column layout
+    }{}
+}
+
+% Define an alias for \listoftables as \listadetabelas
+\let\listadetabelas\listoftables\relax
+
+% Redefine the glossary section formatting
+\renewcommand{\glossarysection}[2][\theglstoctitle]{%
+    % Handle two-column formatting
+    \ifthenelse{\boolean{@twocolumn}}{
+        \setboolean{ABNTrestorecol}{true}% Save the two-column state
+        \onecolumn% Switch to single-column layout
+    }{
+        \setboolean{ABNTrestorecol}{false}% No need to restore two-column state
+    }
+
+    % If hyperlinked TOC is enabled, adjust the chapter type
+    \ifthenelse{\boolean{ABNThypertoc}}{
+        \renewcommand{\chaptertype}{listoftables.}% Set chapter type for hyperlinks (adjust if glossary-specific type is needed)
+    }{}
+
+    % Clear the page before starting the glossary, respecting 'openright' option
+    \if@openright
+        \cleardoublepage% Start on the right page
+    \else
+        \clearpage% Start on the next available page
+    \fi
+
+    % Add a custom header image
+    \putat{-25}{-121}{%
+        \includegraphics[scale=0.08]{style/header.png}% Include the header image
+    }%
+
+    % Add vertical spacing below the header
+    \vspace{6pt}%
+
+    % Apply the specific page style for the glossary
+    \thispagestyle{\chaptertitlepagestyle}%
+
+    % Add the glossary heading
+    \@makeschapterhead{#2}% Use the provided title (#2) as the chapter heading
+}
+
+% Redefine the glossary preamble (content before the glossary entries)
+\renewcommand*{\glossarypreamble}{
+    % Add vertical spacing before the glossary entries
+    \vspace{70pt}
+}
+
+
+% -----------------------------------------------------------------------------
+% Cover and Sheet Setup
+% -----------------------------------------------------------------------------
+
+% Redefine the \capa (cover page) command
+\renewcommand{\capa}{
+    \begin{titlepage} % Start the title page
+        \setcounter{page}{0} % Set the page number to 0
+        \espaco{1.1} % Set the line spacing
+
+        % Add institutional details (if available)
+        \begin{center}
+            \ABNTifnotempty{\ABNTinstituicaodata}{%
+                {\instituicaoformat\ABNTinstituicaodata\par}% Institution name
+            }
+            \ABNTifnotempty{\ABNTdepartamentodata}{%
+                {\departamentoformat\ABNTdepartamentodata\par}% Department name
+            }
+            \ABNTifnotempty{\ABNTprogramadata}{%
+                {\programaformat\ABNTprogramadata\par}% Program name
+            }
+        \end{center}
+
+        % Add spacing between sections
+        \vfill\vfill\vfill
+
+        % Add title and work type details (if available)
+        \begin{center}
+            \ABNTifnotempty{\ABNTtitulodata}{%
+                {\tituloformat\ABNTtitulodata\par}% Title of the work
+            }
+            \ABNTifnotempty{\ABNTtrabalhodata}{%
+                {\trabalhoformat\ABNTtrabalhodata\par}% Type of work (e.g., dissertation, thesis)
+            }
+        \end{center}
+
+        % Add spacing for the author and supervisor sections
+        \vfill
+
+        % Add author and supervisor details (if available)
+        \begin{center}
+            \ABNTifnotempty{\ABNTautordata}{%
+                {By:}\protect\\
+                {\autorformat\ABNTautordata}\protect\\ % Author name
+                \vspace{1.4cm}
+            }
+            \ABNTifnotempty{\ABNTorientadordata}{%
+                {Supervisor:}\protect\\
+                {\orientadorformat\ABNTorientadordata}\protect\\ % Supervisor name
+                \vspace{0.7cm}
+            }
+            \ABNTifnotempty{\ABNTcoorientadordata}{%
+                {Co-supervisor:}\protect\\
+                {\coorientadorformat\ABNTcoorientadordata}% Co-supervisor name
+            }
+        \end{center}
+
+        % Add spacing for the location and date
+        \vfill\vfill
+
+        % Add location and date details (if available)
+        \begin{center}
+            \ABNTifnotempty{\ABNTlocaldata}{%
+                {\localformat\ABNTlocaldata}\par% Location
+            }
+            \ABNTifnotempty{\ABNTdatadata}{%
+                {\dataformat\ABNTdatadata}% Date
+            }
+        \end{center}
+    \end{titlepage}
+}
+
+% Redefine the \folhaderosto (cover sheet) command
+\renewcommand{\folhaderosto}{
+    % Ensure the cover sheet starts on the correct page
+    \if@openright
+        \cleardoublepage % Start on the right page
+    \else
+        \clearpage % Start on the next available page
+    \fi
+
+    % Handle two-column formatting
+    \if@twocolumn
+        \@restonecoltrue\onecolumn % Switch to single-column layout
+    \else
+        \@restonecolfalse\newpage % Add a new page if not in two-column mode
+    \fi
+
+    % Set the initial vertical alignment and page style
+    \vspace*{0cm}
+    \thispagestyle{empty}
+
+    % Display the title
+    \begin{center}
+        \ABNTifnotempty{\ABNTtitulodata}{%
+            \programaformat{\ABNTtitulodata} % Format and display the title
+        }
+    \end{center}
+
+    % Display "by"
+    \begin{center}
+        by
+    \end{center}
+
+    % Display the author name
+    \thispagestyle{empty}
+    \begin{center}
+        \ABNTifnotempty{\ABNTautordata}{%
+            \autorformat\ABNTautordata % Format and display the author name
+        }
+    \end{center}
+
+    % Display the degree information
+    \begin{center}
+        \ABNTifnotempty{\bachelorDegree}{%
+            \vspace{0.75cm}
+            \bachelorDegree\\ % Bachelor degree information
+        }
+        \ABNTifnotempty{\masterDegree}{%
+            \masterDegree\\ % Master degree information
+        }
+    \end{center}
+
+    % Display the thesis statement
+    \vspace{0.75cm}
+    \begin{addmargin}[8em]{8em}
+        \begin{center}
+            A thesis submitted in partial fulfillment of the requirements for the degree of Doctor of Philosophy in the~\ABNTdepartamentodata\\
+            \ABNTinstituicaodata % Institution and department details
+        \end{center}
+    \end{addmargin}
+
+    % Display the date
+    \begin{center}
+        \ABNTifnotempty{\ABNTdatadata}{%
+            {\dataformat\ABNTdatadata} % Format and display the date
+        }
+    \end{center}
+
+    % Add the author's signature
+    \vspace{4cm}
+    Signature of the Author \hrulefill \par
+    \vspace{1.25cm}
+
+    % Add the acceptance signature section
+    \begin{espacosimples}
+        Accepted by \hrulefill \\
+        \hspace*{3cm}Coordinator, Computer Science Department \hspace*{3cm}Date
+    \end{espacosimples}
+
+    % Fill the remaining space on the page
+    \vspace*{\fill}
+}
+
+% Define the \folhaaprovacao (approval sheet) command
+\newcommand{\folhaaprovacao}{
+    % Ensure the approval sheet starts on the correct page
+    \if@openright
+        \cleardoublepage % Start on the right page
+    \else
+        \clearpage % Start on the next available page
+    \fi
+
+    % Handle two-column formatting
+    \if@twocolumn
+        \@restonecoltrue\onecolumn % Switch to single-column layout
+    \else
+        \@restonecolfalse\newpage % Add a new page if not in two-column mode
+    \fi
+
+    % Set the initial vertical alignment and page style
+    \vspace*{0cm}
+    \thispagestyle{empty} % No headers or footers
+
+    % Display institutional details (if available)
+    \ABNTifnotempty{\ABNTinstituicaodata}{
+        \begin{center}
+            {\Large\scshape\ABNTinstituicaodata}\\ % Institution name
+            {\large\scshape\ABNTdepartamentodata}\\ % Department name
+            {\large\scshape\ABNTprogramadata}\\ % Program name
+            {\large\scshape\ABNTlocaldata} % Location
+        \end{center}
+    }
+
+    % Display the certificate title
+    \begin{center}
+        {\large\scshape\underline{Certificate of Approval}}
+    \end{center}
+
+    % Add a decorative separator and degree information
+    \begin{center}
+        \hrulefill\\
+        {\large\scshape{Ph.D. Degree Dissertation}}\\
+        \vspace{-0.30cm}
+        \hrulefill\\
+    \end{center}
+
+    % Approval statement by the committee
+    \vspace{0.30cm}
+    \begin{addmargin}[6em]{6em} % Add margins for better alignment
+        \begin{center}
+            \begin{espacosimples}
+                The Ph.D. Degree Dissertation of~\ABNTautordata~has been examined
+                and approved by the dissertation committee as satisfactory for
+                the dissertation required for the Ph.D. degree in Computer Science.
+            \end{espacosimples}
+        \end{center}
+    \end{addmargin}
+
+    % Add committee signatures
+    \vspace{2cm}
+    \begin{addmargin}[13em]{0em} % Add left margin for signature alignment
+        \begin{espacosimples}
+            \hrulefill\\
+            Dr.~\ABNTorientadordata, Dissertation Supervisor
+        \end{espacosimples}
+
+        \vspace{0.75cm}
+
+        \begin{espacosimples}
+            \noindent\hrulefill\\
+            Dr.~\committeeNameA, \committeeDataA % Committee member A
+        \end{espacosimples}
+
+        \vspace{0.75cm}
+
+        \begin{espacosimples}
+            \noindent\hrulefill\\
+            Dr.~\committeeNameB % Committee member B
+        \end{espacosimples}
+
+        \vspace{0.75cm}
+
+        \begin{espacosimples}
+            \noindent\hrulefill\\
+            Dr.~\committeeNameC % Committee member C
+        \end{espacosimples}
+
+        \vspace{0.75cm}
+
+        \begin{espacosimples}
+            \noindent\hrulefill\\
+            Date
+        \end{espacosimples}
+    \end{addmargin}
+}
+
+% Define the \dedicationpage (dedication page) command
+\newcommand{\dedicationpage}{
+    % Ensure the dedication page starts on the correct page
+    \if@openright
+        \cleardoublepage % Start on the right page
+    \else
+        \clearpage % Start on the next available page
+    \fi
+
+    % Handle two-column formatting
+    \if@twocolumn
+        \@restonecoltrue\onecolumn % Switch to single-column layout
+    \else
+        \@restonecolfalse\newpage % Add a new page if not in two-column mode
+    \fi
+
+    % Set the page style and initial spacing
+    \thispagestyle{empty} % No headers or footers
+    \mbox{} % Add an empty box to ensure spacing
+    \vfill % Push the content to the vertical center
+
+    % Display the dedication text if available
+    \ABNTifnotempty{\dedicationdata}{
+        \begin{pretextualtext} % Custom environment for pretextual elements
+            {\dedicationformat\dedicationdata}\par % Apply the dedication format
+        \end{pretextualtext}
+    }
+
+    % Add spacing below the dedication text
+    \vfill
+    \mbox{} % Add an empty box to ensure spacing
+}
+
+% Define the \acknowledgmentpage (acknowledgment page) command
+\newcommand{\acknowledgmentpage}{
+    % Ensure the acknowledgment page starts on the correct page
+    \if@openright
+        \cleardoublepage % Start on the right page
+    \else
+        \clearpage % Start on the next available page
+    \fi
+
+    % Handle two-column formatting
+    \if@twocolumn
+        \@restonecoltrue\onecolumn % Switch to single-column layout
+    \else
+        \@restonecolfalse\newpage % Add a new page if not in two-column mode
+    \fi
+
+    % Add the acknowledgment chapter heading
+    \pretextualchapter{\acknowledgmentname} % Use the predefined acknowledgment name
+
+    % Add vertical spacing before the acknowledgment content
+    \vspace{80pt}
+
+    % Reset chapter type if hyperlinked TOC is enabled
+    \ifthenelse{\boolean{ABNThypertoc}}{
+        \renewcommand{\chaptertype}{} % Clear chapter type for hyperlinks
+    }{}
+
+    % Display the acknowledgment text, right-aligned
+    \begin{flushright}
+        \acknowledgmentformat\acknowledgmentdata % Format and display the acknowledgment data
+    \end{flushright}
+
+    % Ensure proper page break after the acknowledgment content
+    \newpage
+}
+
+% Define the \epigraphpage (epigraph page) command
+\newcommand{\epigraphpage}{
+    % Ensure the epigraph page starts on the correct page
+    \if@openright
+        \cleardoublepage % Start on the right page
+    \else
+        \clearpage % Start on the next available page
+    \fi
+
+    % Handle two-column formatting
+    \if@twocolumn
+        \@restonecoltrue\onecolumn % Switch to single-column layout
+    \else
+        \@restonecolfalse\newpage % Add a new page if not in two-column mode
+    \fi
+
+    % Set the page style to empty (no headers or footers)
+    \thispagestyle{empty}
+
+    % Center the content vertically
+    \vspace*{\fill}
+
+    % Use single spacing for the epigraph text
+    \begin{espacosimples}
+        % Display the epigraph text, if available
+        \ABNTifnotempty{\epigraphdata}{
+            \begin{flushright}
+                {\epigraphformat\epigraphdata} % Format and display the epigraph text
+            \end{flushright}
+
+            % Display the epigraph author, if available
+            \ABNTifnotempty{\epigraphauthordata}{
+                \begin{flushright}
+                    {\epigraphauthorformat\epigraphauthordata} % Format and display the author
+                \end{flushright}
+            }
+        }
+    \end{espacosimples}
+}
+
+
+% -----------------------------------------------------------------------------
+% Pre-Textual Elements Setup
+% -----------------------------------------------------------------------------
+
+% Define the pre-textual text formatting environment
+\newenvironment{pretextualtext}{
+    % Start the environment with single-line spacing
+    \begin{espacosimples}
+        \small % Set text size to small
+        % Configure a list to control margins and indentation
+        \begin{list}{}{
+            \setlength{\listparindent}{0cm} % No paragraph indentation
+            \setlength{\itemindent}{\listparindent} % Item indentation matches paragraph indentation
+            \setlength{\rightmargin}{0cm} % No right margin
+            \setlength{\leftmargin}{5cm} % Left margin set to 5cm
+            \setlength{\parsep}{0pt} % No extra spacing between paragraphs
+        }
+        \item\relax % Start the list with a relaxed item
+    }
+    {
+        % End the list and spacing environment
+        \end{list}
+    \end{espacosimples}
+}
+
+% Redefine the abstract formatting
+\renewcommand{\ABNTabstractname}{Abstract}
+
+% Define the abstract environment
+\renewenvironment{abstract}{
+    % Ensure the abstract starts on the correct page
+    \if@openright
+        \cleardoublepage % Start on the right page
+    \else
+        \clearpage % Start on the next available page
+    \fi
+
+    % Handle chapter type for hyperlinked table of contents (if enabled)
+    \ifthenelse{\boolean{ABNThypertoc}}{
+        \renewcommand{\chaptertype}{abstract.} % Set the chapter type for hyperlinks
+    }{}
+
+    % Add the abstract chapter heading
+    \pretextualchapter{\ABNTabstractname}
+
+    % Add vertical spacing before the abstract content
+    \vspace{80pt}
+
+    % Reset chapter type if hyperlinked TOC is enabled
+    \ifthenelse{\boolean{ABNThypertoc}}{
+        \renewcommand{\chaptertype}{} % Clear the chapter type
+    }{}
+
+    % Start the abstract content with 1.5 line spacing
+    \begin{espacoumemeio}
+}{
+    % End the abstract content and add a new page
+    \end{espacoumemeio}
+    \newpage
+}
+
+% Redefine the Danish abstract title
+\renewcommand{\resumoname}{Resume}
+
+% Define the Danish abstract environment
+\newenvironment{resume}{
+    % Ensure the Danish abstract starts on the correct page
+    \if@openright
+        \cleardoublepage % Start on the right page
+    \else
+        \clearpage % Start on the next available page
+    \fi
+
+    % Handle chapter type for hyperlinked table of contents (if enabled)
+    \ifthenelse{\boolean{ABNThypertoc}}{
+        \renewcommand{\chaptertype}{resumo.} % Set the chapter type for hyperlinks
+    }{}
+
+    % Add the Danish abstract chapter heading
+    \pretextualchapter{\resumoname}
+
+    % Add vertical spacing before the abstract content
+    \vspace{80pt}
+
+    % Reset chapter type if hyperlinked TOC is enabled
+    \ifthenelse{\boolean{ABNThypertoc}}{
+        \renewcommand{\chaptertype}{} % Clear the chapter type
+    }{}
+
+    % Start the Danish abstract content with 1.5 line spacing
+    \begin{espacoumemeio}
+}{
+    % End the Danish abstract content and add a new page
+    \end{espacoumemeio}
+    \newpage
+}
+
+
+% -----------------------------------------------------------------------------
+% References Setup
+% -----------------------------------------------------------------------------
+
+% Redefine the bibliography environment
+\renewenvironment{thebibliography}[1]{
+    % Ensure the bibliography starts on a new page or right page
+    \if@openright
+        \cleardoublepage % Start on the right page
+    \else
+        \clearpage % Start on the next available page
+    \fi
+
+    % Add a custom header image
+    \putat{-25}{-121}{%
+        \includegraphics[scale=0.08]{style/header.png} % Header image
+    }
+
+    % Add vertical spacing and set the page style
+    \vspace{6pt}
+    \thispagestyle{\chaptertitlepagestyle}
+
+    % Reset top figure placement and disable indentation
+    \global\@topnum\z@
+    \@afterindentfalse
+
+    % Update headers with the bibliography name
+    \@mkboth{\refname}{\refname}
+
+    % Include the bibliography in the table of contents, if enabled
+    \ifthenelse{\boolean{ABNTincludeintoc}}{
+        \ABNTaddcontentsline{toc}{chapter}{\refname} % Add to TOC as a chapter
+    }{}
+
+    % Handle two-column layouts
+    \if@twocolumn
+        \@topnewpage[\@makeschapterhead{\refname}] % Add chapter heading for two-column layout
+    \else
+        \@makeschapterhead{\refname} % Add chapter heading for single-column layout
+        \@afterheading % Ensure proper spacing after the heading
+    \fi
+
+    % Add vertical spacing before the bibliography entries
+    \vspace{80pt}
+
+    % Start the bibliography list
+    \list{\@biblabel{\@arabic\c@enumiv}}{
+        \settowidth\labelwidth{\@biblabel{#1}} % Set label width
+        \leftmargin\labelwidth
+        \advance\leftmargin\labelsep % Adjust left margin
+        \@openbib@code % Open bibliography code
+        \usecounter{enumiv} % Use a counter for entries
+        \let\p@enumiv\@empty % Reset prefix
+        \renewcommand\theenumiv{\@arabic\c@enumiv} % Use Arabic numerals for labels
+    }
+
+    % Formatting for the bibliography entries
+    \sloppy % Adjust text justification for better appearance
+    \espaco{simples} % Use single line spacing
+    \clubpenalty4000 % Avoid clubs (first line of a paragraph on the last page)
+    \@clubpenalty \clubpenalty
+    \widowpenalty4000 % Avoid widows (last line of a paragraph on the first page)
+    \sfcode`\.\@m % Adjust spacing after periods
+}{
+    % Handle empty bibliography environment
+    \def\@noitemerr{\@latex@warning{Empty `thebibliography' environment}}
+    \endlist % End the bibliography list
+}

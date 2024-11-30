@@ -1,0 +1,89 @@
+%
+% MIT License
+%
+% Copyright (c) 2024 Fabricio Batista Narcizo.
+%
+% Permission is hereby granted, free of charge, to any person obtaining a copy
+% of this software and associated documentation files (the "Software"), to deal
+% in the Software without restriction, including without limitation the rights
+% to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+% copies of the Software, and to permit persons to whom the Software is
+% furnished to do so, subject to the following conditions:
+%
+% The above copyright notice and this permission notice shall be included in
+% all copies or substantial portions of the Software.
+%
+% THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+% IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+% FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+% AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+% LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+% OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
+% SOFTWARE.
+%
+
+% Results and Analysis Chapter.
+\chapter{Results and Analysis}\label{chap:results}
+\lettrine[lines=3]{T}{he} results and analysis chapter presents the outcomes of your study and provides an in-depth interpretation of the findings. This chapter should be structured to highlight the connection between your research questions, the data, and the insights derived from the analysis.
+
+Start the chapter with a brief overview of its purpose. For example: ``\textit{This chapter presents the results obtained from the experiments and analyzes them in the context of the research objectives. The findings are discussed with the support of tables, figures, and graphs, followed by a detailed interpretation of their significance.}''
+
+\section{Data Processing and Preparation}\label{sec:data-processing}
+Detail the steps taken to preprocess the data and make it suitable for analysis. Include techniques such as cleaning, normalization, or feature extraction. For example:
+
+The data preparation involved the following steps:
+\begin{enumerate}
+    \item Data cleaning to handle missing values and outliers.
+    \item Normalization of numerical features to ensure consistent scaling.
+    \item Feature extraction using principal component analysis (PCA).
+\end{enumerate}
+
+% Example of cross-referencing.
+See Chapter~\ref{chap:methodology} for details on the preprocessing tools used\footnote{This is a footnote example. Footnotes are useful for providing additional information or clarifications without disrupting the flow of the text.}.
+
+\section{Experimental Setup}\label{sec:experimental-setup}
+Explain the experimental configuration, including software, hardware, and parameters used. Provide enough detail for others to replicate your experiments. For example: ``\textit{The experiments were conducted on a system with the specifications shown in Table~\ref{tab:experimental-setup}.}''
+\input{tables/experimental-setup}
+
+\section{Results Presentation}\label{sec:results-presentation}
+Use tables, figures, and graphs to present your results. Be sure to label and caption all visuals for easy reference. I strongly recommend using the \texttt{tikz}. For example, Figure~\ref{fig:real-data-histogram} shows the gaze-error distribution on the $Y$-axis of real eye-tracking data.
+\begin{figure*}[!ht]
+    \centering
+    \resizebox{\textwidth}{!}{%
+        \input{tikz/real-data-histogram.tex}
+    }
+    \caption{Example of dynamic \texttt{tikz} plot that reads \texttt{csv} files with actual results data.}
+    \label{fig:real-data-histogram}
+\end{figure*}
+
+Table~\ref{tab:real-gaussian-distribution} shows a smaller variance in the gaze-error on the $X$-axis than on $Y$-axis. The number of gaze estimations between $-0.5^\circ$ and $0.5^\circ$ increases using the methods proposed in this study~\cite{Narcizo2021}. When compared with traditional gaze estimation methods, the proposed methods (signed with \texttt{+} and \texttt{*} symbols) present a significant improvement in gaze estimation accuracy.
+\input{tables/real-gaussian-distribution}
+
+\texttt{Tikz} is a powerful tool for creating high-quality graphics directly in \LaTeX. In my paper from 2021~\cite{Narcizo2021}, I used \texttt{tikz} to create all the figures and plots. This example reads \texttt{csv} files with the actual results data and generates a dynamic plot. The \texttt{tikz} code is available in the \texttt{tikz/real-data-histogram.tex} file and the \texttt{csv} data in the \texttt{data} folder. This file and data are the same used in the paper~\cite{Narcizo2021}.
+
+Another good alternative for creating plots is the \texttt{pgfplots} package. This package is based on \texttt{tikz} and provides a high-level interface for creating plots. For example, Figure~\ref{fig:correlation-analysis} shows the relationships between driver characteristics (experience and age) and various driving parameters, including speeding behavior, engine speed, and vehicle speed across age groups. You can save the \texttt{Matplotlib} plots as \texttt{.pgf} files using the following Python code, just after showing the plot: \texttt{plt.savefig("pgf/co-rq-1.pgf")}.
+\begin{figure}[!ht]
+    \centering
+    \begin{subfigure}[b]{0.49\textwidth}
+        \caption{}
+        \label{fig:correlation-analysis-a}
+        \resizebox{\textwidth}{!}{%
+            \input{pgf/co-rq-1.pgf}
+        }
+    \end{subfigure}
+    \begin{subfigure}[b]{0.49\textwidth}
+        \caption{}
+        \label{fig:correlation-analysis-c}
+        \resizebox{\textwidth}{!}{%
+            \input{pgf/co-rq-2.pgf}
+        }
+    \end{subfigure}
+    \caption{Example of \texttt{pgfplots} generated using Python.}
+    \label{fig:correlation-analysis}
+\end{figure}
+
+\section{Analysis and Interpretation}\label{sec:analysis-interpretation}
+Analyze the results in the context of your research questions or hypotheses. Discuss trends, patterns, and implications, and highlight how your findings relate to previous work. For example: ``\textit{The results show a significant improvement in gaze estimation accuracy using the proposed method. The average gaze accuracy increased up to 30\% compared to the traditional methods, as shown in Table~\ref{tab:real-gaussian-distribution}. The results indicate a significant improvement in performance compared to prior work~\cite{Narcizo2017}. Models $H_e^{s*}$ and $P_e^{s*}$ outperformed other models, increase the high-accuracy gaze estimation to 62\% and 63\% respectivally.}''
+
+\section{Summary}\label{sec:results-summary}
+Conclude the chapter by summarizing and connecting the primary findings to your research objectives. Indicate how the results cover the way for discussions in the next chapter. For example: ``\textit{In the first example, the results demonstrate the effectiveness of the proposed method in improving gaze estimation accuracy~\cite{Narcizo2021}. In the second one, the findings provide valuable insights into the relationship between driver characteristics and driving behavior. The next chapter will discuss the implications of these results and suggest future research directions.}''

@@ -20,8 +20,7 @@ This repository provides a LaTeX template for creating a thesis following the fo
 ```plaintext
 itu-thesis-latex-template/
 │
-├── thesis.tex          # Main LaTeX source file
-├── thesis.pdf          # Compiled example of the thesis
+├── main.tex            # Main LaTeX source file
 ├── references.bib      # Bibliography file
 ├── LICENSE             # License for the repository
 ├── ITU.sty             # ITU thesis style file
@@ -58,26 +57,26 @@ Ensure you have the following software installed:
    git clone https://github.com/fabricionarcizo/itu-thesis-latex-template.git
    cd itu-thesis-latex-template
    ```
-2. Open `thesis.tex` in your preferred LaTeX editor (e.g., Overleaf, Texmaker, TeXworks).
+2. Open `main.tex` in your preferred LaTeX editor (e.g., Overleaf, Texmaker, TeXworks).
 
 ### Compilation
 
 Run the following command to compile the thesis:
 
 ```bash
-pdflatex thesis.tex
+pdflatex main.tex
 bibtex thesis
 makeglossaries thesis
-pdflatex thesis.tex
-pdflatex thesis.tex
+pdflatex main.tex
+pdflatex main.tex
 ```
 
 Alternatively, use an integrated LaTeX editor like Overleaf or Texmaker.
 
 ## Usage
 
-1. Edit the `thesis.tex` file to include your thesis title, author information, and abstract.
-2. Write individual chapters in separate files under the `chapters/` directory and include them in `thesis.tex` using `\include`.
+1. Edit the `main.tex` file to include your thesis title, author information, and abstract.
+2. Write individual chapters in separate files under the `chapters/` directory and include them in `main.tex` using `\include`.
 3. Add your figures to the `images/` directory and include them using the `\includegraphics` command.
 4. Manage references in the `references.bib` file.
 

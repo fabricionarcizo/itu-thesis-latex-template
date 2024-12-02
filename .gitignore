@@ -305,5 +305,9 @@ TSWLatexianTemp*
 # Uncomment the next line to have this generated file ignored.
 #*Notes.bib
 
-# macOS
+# TiKZ external files
+tikz/*.dep
+tikz/*.pdf
+
+# macOS system files
 .DS_Store

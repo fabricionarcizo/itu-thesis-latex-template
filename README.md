@@ -53,10 +53,12 @@ Ensure you have the following software installed:
 ### Installation
 
 1. Clone this repository to your local machine:
+
    ```bash
    git clone https://github.com/fabricionarcizo/itu-thesis-latex-template.git
    cd itu-thesis-latex-template
    ```
+
 2. Open `main.tex` in your preferred LaTeX editor (e.g., Overleaf, Texmaker, TeXworks).
 
 ### Compilation
@@ -86,17 +88,23 @@ Contributions are welcome! To contribute:
 
 1. Fork the repository.
 2. Create a feature branch:
+
    ```bash
    git checkout -b feature-name
    ```
+
 3. Commit your changes:
+
    ```bash
    git commit -m "Add feature description"
    ```
+
 4. Push to the branch:
+
    ```bash
    git push origin feature-name
    ```
+
 5. Open a Pull Request.
 
 ## License

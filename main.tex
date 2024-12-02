@@ -41,7 +41,8 @@
 % -----------------------------------------------------------------------------
 
 % Encoding and fonts.
-\usepackage{type1cm}  % Custom section heading font size.
+\usepackage{fontspec}  % Font selection for XeLaTeX and LuaLaTeX.
+\usepackage{type1cm}   % Custom section heading font size.
 
 % Document formatting and structure.
 \usepackage{pdflscape}  % Landscape orientation for some pages.
@@ -132,9 +133,8 @@
 % -----------------------------------------------------------------------------
 \usepgfplotslibrary{groupplots}
 \usetikzlibrary{calc,intersections,quotes,angles,external,patterns,positioning}
-\usetikzlibrary{external}
-%\tikzexternalize[prefix=tikz/]
-\pgfplotsset{compat=1.18}
+\tikzexternalize[prefix=tikz/, optimize=false]
+\pgfplotsset{compat=1.18, lua backend=false}
 \providecommand\mathdefault[1]{#1}
 
 

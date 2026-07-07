@@ -39,6 +39,7 @@
 % Imported Packages
 % -----------------------------------------------------------------------------
 \RequirePackage{ifthen}
+\RequirePackage{xstring}
 \RequirePackage[english]{babel}
 \RequirePackage{scrextend}
 \RequirePackage[acronym,nonumberlist]{glossaries}
@@ -77,12 +78,23 @@
 \providecommand{\ABNTsubtitledata}{}
 \newcommand{\subtitle}[1]{\renewcommand{\ABNTsubtitledata}{#1}}
 
+% Colophon (info page) fields: copyright notice, publisher address, and a
+% ready-to-cite bibliographic reference. Conflict-safe command names are used
+% on purpose (\citation is a BibTeX internal and \address is a KOMA/letter
+% command, so neither may be reused here).
+\providecommand{\ABNTcopyrightdata}{}
+\newcommand{\copyrightinfo}[1]{\renewcommand{\ABNTcopyrightdata}{#1}}
+\providecommand{\ABNTaddressdata}{}
+\newcommand{\publisheraddress}[1]{\renewcommand{\ABNTaddressdata}{#1}}
+\providecommand{\ABNTcitationdata}{}
+\newcommand{\citationinfo}[1]{\renewcommand{\ABNTcitationdata}{#1}}
+
 % Translate the main commands to English.
 \newcommand{\university}[1]{\instituicao{#1}}
 \newcommand{\maintitle}[1]{\titulo{#1}}
 \renewcommand{\author}[1]{\ITUaddauthor{#1}}
 \newcommand{\supervisor}[1]{\orientador{#1}}
-\newcommand{\cosupervisor}[1]{\coorientador{#1}}
+\newcommand{\cosupervisor}[1]{\ITUaddcosupervisor{#1}}
 \newcommand{\city}[1]{\local{#1}}
 \newcommand{\cover}[1]{\capa}
 \newcommand{\contents}{\sumario}
@@ -153,6 +165,74 @@
     \or\ITUauthorA\\\ITUauthorB\\\ITUauthorC
     \fi
 }
+
+% Multiple co-supervisors (one to three), mirroring the multi-author handling.
+% Each \cosupervisor call registers one name. \ITUcosupinline prints a
+% grammatical list ("A", "A and B", or "A, B and C") and \ITUcosuplabel gives an
+% adaptive label ("Co-Supervisor:" for one, "Co-Supervisors:" for several). The
+% ABNT co-supervisor field is kept in sync so emptiness checks keep working.
+\newcounter{ITUnumcosup}
+\providecommand{\ITUcosupA}{}
+\providecommand{\ITUcosupB}{}
+\providecommand{\ITUcosupC}{}
+\newcommand{\ITUaddcosupervisor}[1]{%
+    \stepcounter{ITUnumcosup}%
+    \ifcase\value{ITUnumcosup}%
+        \or\renewcommand{\ITUcosupA}{#1}%
+        \or\renewcommand{\ITUcosupB}{#1}%
+        \or\renewcommand{\ITUcosupC}{#1}%
+        \else\PackageError{ITU}{At most three co-supervisors are supported}%
+            {Use no more than three \string\cosupervisor\space commands.}%
+    \fi
+    \coorientador{\ITUcosupinline}%
+}
+\newcommand{\ITUcosupinline}{%
+    \ifcase\value{ITUnumcosup}%
+    \or\ITUcosupA
+    \or\ITUcosupA{} and \ITUcosupB
+    \or\ITUcosupA, \ITUcosupB{} and \ITUcosupC
+    \fi
+}
+\newcommand{\ITUcosuplabel}{%
+    \ifnum\value{ITUnumcosup}>1 Co-Supervisors:\else Co-Supervisor:\fi
+}
+
+% Automatic IEEE-style bibliographic citation for the colophon, assembled from
+% the document metadata (authors, title, thesis type, university, place, year).
+% A manual \citationinfo{...} still overrides it (see \infopage).
+%
+% \ITUinitials abbreviates all given names of a full name to initials and keeps
+% the surname, e.g. "Fabricio Batista Narcizo" -> "F. B. Narcizo".
+\newcommand{\ITU@ifempty}[1]{%
+    \expandafter\ifx\expandafter\relax\detokenize{#1}\relax
+        \expandafter\@firstoftwo\else\expandafter\@secondoftwo\fi}
+\newcommand{\ITUinitials}[1]{\ITU@ini#1 \ITU@ninil}
+\def\ITU@ini#1 #2\ITU@ninil{%
+    \ITU@ifempty{#2}{#1}{\ITU@fc#1\ITU@ninil.~\ITU@ini#2\ITU@ninil}}
+\def\ITU@fc#1#2\ITU@ninil{#1}
+% One-expansion wrapper so a stored name macro is split, not its single token.
+\newcommand{\ITUinitialsx}[1]{\expandafter\ITUinitials\expandafter{#1}}
+
+% Registered authors joined in IEEE order ("A", "A and B", "A, B, and C").
+\newcommand{\ITUauthorsieee}{%
+    \ifcase\value{ITUnumauthors}%
+    \or\ITUinitialsx{\ITUauthorA}%
+    \or\ITUinitialsx{\ITUauthorA} and \ITUinitialsx{\ITUauthorB}%
+    \or\ITUinitialsx{\ITUauthorA}, \ITUinitialsx{\ITUauthorB}, and \ITUinitialsx{\ITUauthorC}%
+    \fi}
+
+% Year = last space-separated token of the date ("July, 2026" -> "2026").
+\newcommand{\ITUcitationyear}{\expandafter\ITU@lwstart\expandafter{\ABNTdatadata}}
+\def\ITU@lwstart#1{\ITU@lw#1 \ITU@ninil}
+\def\ITU@lw#1 #2\ITU@ninil{\ITU@ifempty{#2}{#1}{\ITU@lw#2\ITU@ninil}}
+
+% Place = the \city value with " -- " normalised to ", ".
+\newcommand{\ITUcitationplace}{{\fullexpandarg\StrSubstitute{\ABNTlocaldata}{ -- }{, }}}
+
+% The assembled citation.
+\newcommand{\ITUautocitation}{%
+    \ITUauthorsieee, ``\ABNTtitulodata : \ABNTsubtitledata,'' \ABNTthesisdata,
+    \ABNTinstituicaodata, \ITUcitationplace, \ITUcitationyear.}
 
 % Signature blocks for the cover sheet: a centered rule with the author's name
 % centered underneath. \ITUsignatures renders one block per registered author
@@ -821,6 +901,113 @@
         \end{tikzpicture}
         \tikzexternalenable
     \end{titlepage}
+}
+
+% Colophon / information page (placed between the cover and the folha de rosto).
+% A single label:value row: a fixed-width, left-aligned label followed by a
+% top-aligned paragraph box so long values wrap with a hanging indent under the
+% value column.
+\newcommand{\ITUinforow}[2]{%
+    \noindent\makebox[3cm][l]{#1}%
+    \parbox[t]{\dimexpr\linewidth-3cm\relax}{#2}\par\smallskip
+}
+
+% The \infopage command: a mostly empty page whose content sits at the bottom,
+% left-aligned, echoing the imprint page of the reference design.
+\newcommand{\infopage}{%
+    % Ensure the page starts on a fresh sheet.
+    \if@openright
+        \cleardoublepage
+    \else
+        \clearpage
+    \fi
+    \if@twocolumn
+        \@restonecoltrue\onecolumn
+    \else
+        \@restonecolfalse\newpage
+    \fi
+    \thispagestyle{empty}%
+
+    {%
+        \setstretch{1}%
+
+        % Push the whole block to the bottom of the page.
+        \vspace*{\fill}
+        \noindent
+
+        % Title block.
+        {%
+            \setlength{\parskip}{0pt}%
+            \noindent
+            \ABNTifnotempty{\ABNTtitulodata}{%
+                {\bfseries\small\ABNTtitulodata\par}%
+            }%
+            \noindent
+            \ABNTifnotempty{\ABNTsubtitledata}{%
+                {\small\ABNTsubtitledata\par}%
+            }%
+        }%
+        \medskip
+
+        % Thesis type and date.
+        {%
+            \setlength{\parskip}{0pt}%
+            \noindent
+            \ABNTifnotempty{\ABNTthesisdata}{%
+                {\small\ABNTthesisdata\par}%
+            }%
+            \noindent
+            \ABNTifnotempty{\ABNTdatadata}{%
+                {\small\ABNTdatadata\par}%
+            }%
+        }%
+        \medskip
+
+        % Author(s).
+        {%
+            \setlength{\parskip}{0pt}%
+            \noindent
+            {\small By\par}
+            \noindent
+            {\small\ITUauthorslined\par}
+        }%
+        \bigskip
+
+        % Supervision.
+        {%
+            \setlength{\parskip}{0pt}%
+            \noindent
+            \ABNTifnotempty{\ABNTorientadordata}{%
+                \ITUinforow{\small Supervisor:}%
+                           {\small\ABNTorientadordata}%
+            }%
+            \noindent
+            \ABNTifnotempty{\ABNTcoorientadordata}{%
+                \ITUinforow{\small\ITUcosuplabel}%
+                           {\small\ITUcosupinline}%
+            }%
+        }%
+        \medskip
+
+        % Copyright, publisher, and citation.
+        \ABNTifnotempty{\ABNTcopyrightdata}{%
+            \ITUinforow{\small Copyright:}%
+                       {\small\ABNTcopyrightdata}%
+        }%
+
+        \ITUinforow{\small Published by:}{%
+            \small\ABNTinstituicaodata, \ABNTdepartamentodata
+            \newline
+            \ABNTaddressdata
+        }%
+
+        % The citation is generated automatically from the document metadata; a
+        % manual \citationinfo{...} overrides it when provided.
+        \ITUinforow{\small Citation:}%
+                   {\small\expandafter\ITU@ifempty\expandafter{\ABNTcitationdata}{\ITUautocitation}{\ABNTcitationdata}}%
+
+        \vspace*{1cm}%
+    }%
 }
 
 % Redefine the \folhaderosto (cover sheet) command

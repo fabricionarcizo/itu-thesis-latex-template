@@ -87,6 +87,8 @@
 \newcommand{\copyrightinfo}[1]{\renewcommand{\ABNTcopyrightdata}{#1}}
 \providecommand{\ABNTuniversityaddressdata}{}
 \newcommand{\universityaddress}[1]{\renewcommand{\ABNTuniversityaddressdata}{#1}}
+\providecommand{\ABNTuniversityphonenumberdata}{}
+\newcommand{\universityphonenumber}[1]{\renewcommand{\ABNTuniversityphonenumberdata}{#1}}
 \providecommand{\ABNTuniversitywebsitedata}{}
 \newcommand{\universitywebsite}[1]{\renewcommand{\ABNTuniversitywebsitedata}{#1}}
 \providecommand{\ABNTcitationdata}{}
@@ -1005,6 +1007,7 @@
         \ITUinforow{\small Published by:}{%
             \small\ABNTinstituicaodata, \ABNTdepartamentodata
             \ABNTifnotempty{\ABNTuniversityaddressdata}{\newline\ABNTuniversityaddressdata}%
+            \ABNTifnotempty{\ABNTuniversityphonenumberdata}{\newline\ABNTuniversityphonenumberdata}%
             \ABNTifnotempty{\ABNTuniversitywebsitedata}{\newline\ABNTuniversitywebsitedata}%
         }%
 
@@ -1046,6 +1049,8 @@
                      {\bfseries\small\ABNTinstituicaodata\par}}%
                  \ABNTifnotempty{\ABNTuniversityaddressdata}{%
                      {\small\ABNTuniversityaddressdata\par}}%
+                 \ABNTifnotempty{\ABNTuniversityphonenumberdata}{%
+                     {\small\ABNTuniversityphonenumberdata\par}}%
                  \ABNTifnotempty{\ABNTuniversitywebsitedata}{%
                      {\ABNTuniversitywebsitedata\par}}};
         \end{tikzpicture}

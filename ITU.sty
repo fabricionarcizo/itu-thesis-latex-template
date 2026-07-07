@@ -23,21 +23,44 @@
 %
 
 
+% =============================================================================
+% ITU Package
 % -----------------------------------------------------------------------------
-% LaTeX Kernel: ITU.sty
+% Formatting kernel for the (unofficial) ITU thesis template. It sits on top of
+% the abnt document class (classic abnTeX) and re-skins it for English-language
+% Bachelor's, Master's, Ph.D. and research-project documents.
+%
+% The file is organised top-down:
+%   1.  Package requirements and class/package options
+%   2.  abnt compatibility bridge (Portuguese -> English metadata API)
+%   3.  Additional document metadata (department, program, colophon, ...)
+%   4.  Thesis-type logic
+%   5.  Author and co-supervisor lists
+%   6.  Previous degrees and committee members
+%   7.  Dedication / acknowledgment / epigraph data
+%   8.  Fonts and formatting hooks
+%   9.  Automatic IEEE-style citation builder
+%   10. Internal layout helpers (shared boilerplate)
+%   11. Page styles (headers and footers)
+%   12. Sectioning (parts, chapters, chapter heads)
+%   13. Table of contents, lists and glossary
+%   14. Cover, colophon and sheets
+%   15. Pre-textual pages (dedication, acknowledgment, epigraph)
+%   16. Abstract environments (English and Danish)
+%   17. Bibliography
+%
+% Naming convention: commands prefixed with \ITU@ are private to this package;
+% commands prefixed with \ITU (no @) and the abnt bridge names are the public,
+% document-level API.
+% =============================================================================
+
+
+% -----------------------------------------------------------------------------
+% 1. Package requirements and options
 % -----------------------------------------------------------------------------
 \NeedsTeXFormat{LaTeX2e}
-
-
-% -----------------------------------------------------------------------------
-% ITU Package (v0.8.2.20241202)
-% -----------------------------------------------------------------------------
 \ProvidesPackage{ITU}[2024/12/02]
 
-
-% -----------------------------------------------------------------------------
-% Imported Packages
-% -----------------------------------------------------------------------------
 \RequirePackage{ifthen}
 \RequirePackage{xstring}
 \RequirePackage[english]{babel}
@@ -45,61 +68,20 @@
 \RequirePackage{environ}
 \RequirePackage[acronym,nonumberlist]{glossaries}
 
-
-% -----------------------------------------------------------------------------
-% Setup packages and imported classes
-% -----------------------------------------------------------------------------
+% Options handed to the underlying class/packages.
 \PassOptionsToClass{pnumromarab}{abnt}
 \PassOptionsToPackage{hyperindex=false}{hyperref}
 
-
-% -----------------------------------------------------------------------------
-% Global Setup
-% -----------------------------------------------------------------------------
-
-% This command makes LaTex recognizes the character @ (at) as a command.
+% Make @ a letter so the package can define and use internal @-commands.
 \makeatletter
 
-% This command formats the table numbers as X.Y. standard.
+% Format the table numbers as X.Y (chapter.counter).
 \renewcommand{\thetable}{\thechapter.\arabic{table}}
 
-% Define a new element in the document (department).
-\providecommand{\ABNTdepartmentdata}{}
-\newcommand{\department}[1]{\renewcommand{\ABNTdepartmentdata}{#1}}
-\newcommand{\departament}[1]{\department{#1}} % backward-compatible alias
 
-% Define a new element in the document (program).
-\providecommand{\ABNTprogramdata}{}
-\newcommand{\program}[1]{\renewcommand{\ABNTprogramdata}{#1}}
-
-% Define a new element in the document (thesis type).
-\providecommand{\ABNTthesisdata}{}
-\newcommand{\thesis}[1]{\renewcommand{\ABNTthesisdata}{#1}}
-
-% Define a new element in the document (subtitle).
-\providecommand{\ABNTsubtitledata}{}
-\newcommand{\subtitle}[1]{\renewcommand{\ABNTsubtitledata}{#1}}
-
-% Colophon (info page) fields: copyright notice, publisher address, and a
-% ready-to-cite bibliographic reference. Conflict-safe command names are used
-% on purpose (\citation is a BibTeX internal and \address is a KOMA/letter
-% command, so neither may be reused here).
-\providecommand{\ABNTcopyrightdata}{}
-\newcommand{\copyrightinfo}[1]{\renewcommand{\ABNTcopyrightdata}{#1}}
-\providecommand{\ABNTuniversityaddressdata}{}
-\newcommand{\universityaddress}[1]{\renewcommand{\ABNTuniversityaddressdata}{#1}}
-\providecommand{\ABNTuniversityphonenumberdata}{}
-\newcommand{\universityphonenumber}[1]{\renewcommand{\ABNTuniversityphonenumberdata}{#1}}
-\providecommand{\ABNTuniversitywebsitedata}{}
-\newcommand{\universitywebsite}[1]{\renewcommand{\ABNTuniversitywebsitedata}{#1}}
-\providecommand{\ABNTcitationdata}{}
-\newcommand{\citationinfo}[1]{\renewcommand{\ABNTcitationdata}{#1}}
-
-% English summary text, captured from the abstract environment (see below) so the
-% back cover can reprint it without duplicating the source text.
-\providecommand{\ABNTsummarydata}{}
-
-% --- abnt compatibility bridge ---------------------------------------------
+% -----------------------------------------------------------------------------
+% 2. abnt compatibility bridge (Portuguese -> English metadata API)
+% -----------------------------------------------------------------------------
 % The underlying document class (abnt.cls, classic abnTeX) exposes a Portuguese
 % API. This block is the single seam between that API and the English names used
 % throughout the rest of this package: everything below reads in English, and
@@ -107,7 +89,7 @@
 
 % English storage macros for the abnt metadata fields. Fields with an ITU setter
 % (below) are stored as real macros so their *value* is available for low-level
-% expansion (e.g. \ITUcitationyear), and mirrored into the abnt field. Author and
+% expansion (e.g. \ITU@citationyear), and mirrored into the abnt field. Author and
 % co-supervisor are derived lists, so they are simple read-aliases (safe:
 % \ABNTifnotempty fully expands its argument before testing it).
 \providecommand{\ABNTuniversitydata}{}
@@ -145,174 +127,55 @@
 % espacoumemeio (which wrap setspace's `spacing` with ratios 1.0 / 1.35).
 \newenvironment{ITUsinglespacing}{\begin{spacing}{1.0}}{\end{spacing}}
 \newenvironment{ITUonehalfspacing}{\begin{spacing}{1.35}}{\end{spacing}}
-% --- end abnt compatibility bridge -----------------------------------------
 
-% Define new short commands.
-%\DeclareRobustCommand\onedot{\futurelet\@let@token\@onedot}
-%\def\@onedot{\ifx\@let@token.\else.\null\fi\xspace}
-%\def\eg{\emph{e.g}\onedot} \def\Eg{\emph{E.g}\onedot}
-%\def\ie{\emph{i.e}\onedot} \def\Ie{\emph{I.e}\onedot}
-%\def\cf{\emph{c.f}\onedot} \def\Cf{\emph{C.f}\onedot}
-%\def\etc{\emph{etc}\onedot} \def\vs{\emph{vs}\onedot}
-%\def\wrt{w.r.t\onedot} \def\dof{d.o.f\onedot}
-%\def\etal{\emph{et al}\onedot}
-\newcommand{\etal}{\emph{et al.}}
 
-% Setup the font style to the header elements.
-\renewcommand{\rightmarkformat}{\footnotesize}
-\renewcommand{\thepageformat}{\footnotesize}
-\renewcommand{\ABNTchapterfont}{\bfseries}
-\renewcommand{\ABNTtocchapterfont}{\bfseries}
+% -----------------------------------------------------------------------------
+% 3. Additional document metadata
+% -----------------------------------------------------------------------------
 
-% Setup the font style to the document elements. These configure the abnt font
-% hooks; \ITUauthorformat / \ITUdateformat are English handles for the two hooks
-% read in the body below.
-\renewcommand{\instituicaoformat}{\huge}
-\renewcommand{\tituloformat}{\huge}
-\renewcommand{\autorformat}{\large}
-\let\ITUauthorformat\autorformat
-\let\ITUdateformat\dataformat
+% Department.
+\providecommand{\ABNTdepartmentdata}{}
+\newcommand{\department}[1]{\renewcommand{\ABNTdepartmentdata}{#1}}
+\newcommand{\departament}[1]{\department{#1}} % backward-compatible alias
 
-% Setup the font style to the new document elements.
-\providecommand{\departmentformat}{\LARGE}
-\providecommand{\programformat}{\Large}
-\providecommand{\thesisformat}{\normalsize}
+% Program.
+\providecommand{\ABNTprogramdata}{}
+\newcommand{\program}[1]{\renewcommand{\ABNTprogramdata}{#1}}
 
-% Multiple authors (one to three). Each \author call registers one author, so a
-% single call behaves exactly like before. The registered names are exposed as
-% two render helpers: \ITUauthorslined stacks them one per line (used on the
-% cover and cover sheet) and \ITUauthorsinline prints a grammatical list
-% ("A", "A and B", or "A, B and C") used in running text such as the approval
-% statement. The ABNT author field is kept in sync so emptiness checks and any
-% legacy references keep working.
-\newcounter{ITUnumauthors}
-\providecommand{\ITUauthorA}{}
-\providecommand{\ITUauthorB}{}
-\providecommand{\ITUauthorC}{}
-\newcommand{\ITUaddauthor}[1]{%
-    \stepcounter{ITUnumauthors}%
-    \ifcase\value{ITUnumauthors}%
-        \or\renewcommand{\ITUauthorA}{#1}%
-        \or\renewcommand{\ITUauthorB}{#1}%
-        \or\renewcommand{\ITUauthorC}{#1}%
-        \else\PackageError{ITU}{At most three authors are supported}%
-            {Use no more than three \string\author\space commands.}%
-    \fi
-    \ABNTsyncauthorfield{\ITUauthorsinline}%
-}
-\newcommand{\ITUauthorsinline}{%
-    \ifcase\value{ITUnumauthors}%
-    \or\ITUauthorA
-    \or\ITUauthorA{} and \ITUauthorB
-    \or\ITUauthorA, \ITUauthorB{} and \ITUauthorC
-    \fi
-}
-\newcommand{\ITUauthorslined}{%
-    \ifcase\value{ITUnumauthors}%
-    \or\ITUauthorA
-    \or\ITUauthorA\\\ITUauthorB
-    \or\ITUauthorA\\\ITUauthorB\\\ITUauthorC
-    \fi
-}
+% Thesis type label (free-form; usually set automatically by \thesistype).
+\providecommand{\ABNTthesisdata}{}
+\newcommand{\thesis}[1]{\renewcommand{\ABNTthesisdata}{#1}}
 
-% Multiple co-supervisors (one to three), mirroring the multi-author handling.
-% Each \cosupervisor call registers one name. \ITUcosupinline prints a
-% grammatical list ("A", "A and B", or "A, B and C") and \ITUcosuplabel gives an
-% adaptive label ("Co-Supervisor:" for one, "Co-Supervisors:" for several). The
-% ABNT co-supervisor field is kept in sync so emptiness checks keep working.
-\newcounter{ITUnumcosup}
-\providecommand{\ITUcosupA}{}
-\providecommand{\ITUcosupB}{}
-\providecommand{\ITUcosupC}{}
-\newcommand{\ITUaddcosupervisor}[1]{%
-    \stepcounter{ITUnumcosup}%
-    \ifcase\value{ITUnumcosup}%
-        \or\renewcommand{\ITUcosupA}{#1}%
-        \or\renewcommand{\ITUcosupB}{#1}%
-        \or\renewcommand{\ITUcosupC}{#1}%
-        \else\PackageError{ITU}{At most three co-supervisors are supported}%
-            {Use no more than three \string\cosupervisor\space commands.}%
-    \fi
-    \ABNTsynccosupervisorfield{\ITUcosupinline}%
-}
-\newcommand{\ITUcosupinline}{%
-    \ifcase\value{ITUnumcosup}%
-    \or\ITUcosupA
-    \or\ITUcosupA{} and \ITUcosupB
-    \or\ITUcosupA, \ITUcosupB{} and \ITUcosupC
-    \fi
-}
-\newcommand{\ITUcosuplabel}{%
-    \ifnum\value{ITUnumcosup}>1 Co-Supervisors:\else Co-Supervisor:\fi
-}
+% Subtitle.
+\providecommand{\ABNTsubtitledata}{}
+\newcommand{\subtitle}[1]{\renewcommand{\ABNTsubtitledata}{#1}}
 
-% Automatic IEEE-style bibliographic citation for the colophon, assembled from
-% the document metadata (authors, title, thesis type, university, place, year).
-% A manual \citationinfo{...} still overrides it (see \infopage).
-%
-% \ITUinitials abbreviates all given names of a full name to initials and keeps
-% the surname, e.g. "Fabricio Batista Narcizo" -> "F. B. Narcizo".
-\newcommand{\ITU@ifempty}[1]{%
-    \expandafter\ifx\expandafter\relax\detokenize{#1}\relax
-        \expandafter\@firstoftwo\else\expandafter\@secondoftwo\fi}
-\newcommand{\ITUinitials}[1]{\ITU@ini#1 \ITU@ninil}
-\def\ITU@ini#1 #2\ITU@ninil{%
-    \ITU@ifempty{#2}{#1}{\ITU@fc#1\ITU@ninil.~\ITU@ini#2\ITU@ninil}}
-\def\ITU@fc#1#2\ITU@ninil{#1}
-% One-expansion wrapper so a stored name macro is split, not its single token.
-\newcommand{\ITUinitialsx}[1]{\expandafter\ITUinitials\expandafter{#1}}
+% Colophon (info page) fields: copyright notice, publisher address and phone,
+% website, and a ready-to-cite bibliographic reference. Conflict-safe command
+% names are used on purpose (\citation is a BibTeX internal and \address is a
+% KOMA/letter command, so neither may be reused here).
+\providecommand{\ABNTcopyrightdata}{}
+\newcommand{\copyrightinfo}[1]{\renewcommand{\ABNTcopyrightdata}{#1}}
+\providecommand{\ABNTuniversityaddressdata}{}
+\newcommand{\universityaddress}[1]{\renewcommand{\ABNTuniversityaddressdata}{#1}}
+\providecommand{\ABNTuniversityphonenumberdata}{}
+\newcommand{\universityphonenumber}[1]{\renewcommand{\ABNTuniversityphonenumberdata}{#1}}
+\providecommand{\ABNTuniversitywebsitedata}{}
+\newcommand{\universitywebsite}[1]{\renewcommand{\ABNTuniversitywebsitedata}{#1}}
+\providecommand{\ABNTcitationdata}{}
+\newcommand{\citationinfo}[1]{\renewcommand{\ABNTcitationdata}{#1}}
 
-% Registered authors joined in IEEE order ("A", "A and B", "A, B, and C").
-\newcommand{\ITUauthorsieee}{%
-    \ifcase\value{ITUnumauthors}%
-    \or\ITUinitialsx{\ITUauthorA}%
-    \or\ITUinitialsx{\ITUauthorA} and \ITUinitialsx{\ITUauthorB}%
-    \or\ITUinitialsx{\ITUauthorA}, \ITUinitialsx{\ITUauthorB}, and \ITUinitialsx{\ITUauthorC}%
-    \fi}
+% English summary text, captured from the abstract environment (see section 16)
+% so the back cover can reprint it without duplicating the source text.
+\providecommand{\ABNTsummarydata}{}
 
-% Year = last space-separated token of the date ("July, 2026" -> "2026").
-\newcommand{\ITUcitationyear}{\expandafter\ITU@lwstart\expandafter{\ABNTdatedata}}
-\def\ITU@lwstart#1{\ITU@lw#1 \ITU@ninil}
-\def\ITU@lw#1 #2\ITU@ninil{\ITU@ifempty{#2}{#1}{\ITU@lw#2\ITU@ninil}}
 
-% Place = the \city value with " -- " normalised to ", ".
-\newcommand{\ITUcitationplace}{{\fullexpandarg\StrSubstitute{\ABNTcitydata}{ -- }{, }}}
-
-% The assembled citation.
-\newcommand{\ITUautocitation}{%
-    \ITUauthorsieee, ``\ABNTtitledata : \ABNTsubtitledata,'' \ABNTthesisdata,
-    \ABNTuniversitydata, \ITUcitationplace, \ITUcitationyear.}
-
-% Signature blocks for the cover sheet: a centered rule with the author's name
-% centered underneath. \ITUsignatures renders one block per registered author
-% (1 to 3), so the signature area adapts to the number of authors.
-\newcommand{\ITUsignatureblock}[1]{%
-    \rule{0.6\textwidth}{0.5pt}\\[2pt]
-    #1\par
-}
-
-\newcommand{\ITUsignatures}{%
-    \begin{center}
-        \ifcase\value{ITUnumauthors}%
-        \or
-            \ITUsignatureblock{\ITUauthorA}%
-        \or
-            \ITUsignatureblock{\ITUauthorA}%
-            \vspace{8mm}%
-            \ITUsignatureblock{\ITUauthorB}%
-        \or
-            \ITUsignatureblock{\ITUauthorA}%
-            \vspace{8mm}%
-            \ITUsignatureblock{\ITUauthorB}%
-            \vspace{8mm}%
-            \ITUsignatureblock{\ITUauthorC}%
-        \fi
-    \end{center}%
-}
-
+% -----------------------------------------------------------------------------
+% 4. Thesis-type logic
+% -----------------------------------------------------------------------------
 % Thesis type configuration: bachelor | master | phd | research. A single
 % \thesistype command drives the document level: it sets a boolean for the
-% chosen type, auto-fills the type label (\subtitle) and the long degree
+% chosen type, auto-fills the type label (\thesis) and the long degree
 % wording, and lets the cover/approval sheets self-suppress accordingly.
 \newif\ifITUphd
 \newif\ifITUmaster
@@ -337,32 +200,134 @@
     }}}}%
 }
 
-% Setup previous degrees.
-\providecommand{\masterDegree}{}
-\providecommand{\bachelorDegree}{}
-\newcommand{\previousDegrees}[2] {
-	\renewcommand{\masterDegree}{#2}
-    \renewcommand{\bachelorDegree}{#1}
+
+% -----------------------------------------------------------------------------
+% 5. Author and co-supervisor lists
+% -----------------------------------------------------------------------------
+% Both authors and co-supervisors accept one to three entries; each \author /
+% \cosupervisor call registers one name into slot a/b/c. \ITU@addentry holds the
+% shared slot-assignment logic; the per-family setters add the field sync. The
+% abnt fields are kept in sync so emptiness checks and legacy references keep
+% working. The grammatical list renderers are kept explicit per family because
+% they encode exact, spacing-sensitive output.
+
+% Shared registration: increment counter #1, store #6 into slot #2/#3/#4, and
+% raise a package error past the third entry (#5 = plural noun for the message).
+\newcommand{\ITU@addentry}[6]{%
+    \stepcounter{#1}%
+    \ifcase\value{#1}%
+        \or\renewcommand#2{#6}%
+        \or\renewcommand#3{#6}%
+        \or\renewcommand#4{#6}%
+        \else\PackageError{ITU}{At most three #5 are supported}%
+            {Specify no more than three of these entries.}%
+    \fi
 }
 
-% Setup the committee members.
-\providecommand{\committeeNameA}{}
-\providecommand{\committeeDataA}{}
-\newcommand{\committeeMemberA}[2][Chair]
-    {\renewcommand{\committeeNameA}{#2}
-     \renewcommand{\committeeDataA}{#1}}
+% Authors. \ITU@authorsinline prints a grammatical list ("A", "A and B", or
+% "A, B and C") used in running text; \ITU@authorslined stacks them one per line
+% (cover, cover sheet, colophon).
+\newcounter{ITU@numauthors}
+\providecommand{\ITU@authora}{}
+\providecommand{\ITU@authorb}{}
+\providecommand{\ITU@authorc}{}
+\newcommand{\ITUaddauthor}[1]{%
+    \ITU@addentry{ITU@numauthors}{\ITU@authora}{\ITU@authorb}{\ITU@authorc}{authors}{#1}%
+    \ABNTsyncauthorfield{\ITU@authorsinline}%
+}
+\newcommand{\ITU@authorsinline}{%
+    \ifcase\value{ITU@numauthors}%
+    \or\ITU@authora
+    \or\ITU@authora{} and \ITU@authorb
+    \or\ITU@authora, \ITU@authorb{} and \ITU@authorc
+    \fi
+}
+\newcommand{\ITU@authorslined}{%
+    \ifcase\value{ITU@numauthors}%
+    \or\ITU@authora
+    \or\ITU@authora\\\ITU@authorb
+    \or\ITU@authora\\\ITU@authorb\\\ITU@authorc
+    \fi
+}
 
-\providecommand{\committeeNameB}{}
-\providecommand{\committeeDataB}{}
-\newcommand{\committeeMemberB}[2][]
-    {\renewcommand{\committeeNameB}{#2}
-     \renewcommand{\committeeDataB}{#1}}
+% Co-supervisors. \ITU@cosupinline prints the grammatical list and
+% \ITU@cosuplabel gives an adaptive label ("Co-Supervisor:" / "Co-Supervisors:").
+\newcounter{ITU@numcosup}
+\providecommand{\ITU@cosupa}{}
+\providecommand{\ITU@cosupb}{}
+\providecommand{\ITU@cosupc}{}
+\newcommand{\ITUaddcosupervisor}[1]{%
+    \ITU@addentry{ITU@numcosup}{\ITU@cosupa}{\ITU@cosupb}{\ITU@cosupc}{co-supervisors}{#1}%
+    \ABNTsynccosupervisorfield{\ITU@cosupinline}%
+}
+\newcommand{\ITU@cosupinline}{%
+    \ifcase\value{ITU@numcosup}%
+    \or\ITU@cosupa
+    \or\ITU@cosupa{} and \ITU@cosupb
+    \or\ITU@cosupa, \ITU@cosupb{} and \ITU@cosupc
+    \fi
+}
+\newcommand{\ITU@cosuplabel}{%
+    \ifnum\value{ITU@numcosup}>1 Co-Supervisors:\else Co-Supervisor:\fi
+}
 
-\providecommand{\committeeNameC}{}
-\providecommand{\committeeDataC}{}
-\newcommand{\committeeMemberC}[2][]
-    {\renewcommand{\committeeNameC}{#2}
-     \renewcommand{\committeeDataC}{#1}}
+% Signature blocks for the cover sheet: a centered rule with the author's name
+% centered underneath. \ITU@signatures renders one block per registered author
+% (1 to 3), so the signature area adapts to the number of authors.
+\newcommand{\ITU@signatureblock}[1]{%
+    \rule{0.6\textwidth}{0.5pt}\\[2pt]
+    #1\par
+}
+\newcommand{\ITU@signatures}{%
+    \begin{center}
+        \ifcase\value{ITU@numauthors}%
+        \or
+            \ITU@signatureblock{\ITU@authora}%
+        \or
+            \ITU@signatureblock{\ITU@authora}%
+            \vspace{8mm}%
+            \ITU@signatureblock{\ITU@authorb}%
+        \or
+            \ITU@signatureblock{\ITU@authora}%
+            \vspace{8mm}%
+            \ITU@signatureblock{\ITU@authorb}%
+            \vspace{8mm}%
+            \ITU@signatureblock{\ITU@authorc}%
+        \fi
+    \end{center}%
+}
+
+
+% -----------------------------------------------------------------------------
+% 6. Previous degrees and committee members
+% -----------------------------------------------------------------------------
+
+% Previous degrees.
+\providecommand{\masterDegree}{}
+\providecommand{\bachelorDegree}{}
+\newcommand{\previousDegrees}[2]{%
+    \renewcommand{\masterDegree}{#2}%
+    \renewcommand{\bachelorDegree}{#1}%
+}
+
+% Committee members. Three slots (A/B/C); \committeeMemberX[role]{name} stores
+% the name and role. \ITU@defcommittee generates each slot's storage and setter,
+% differing only in the default role of the optional argument.
+\newcommand{\ITU@defcommittee}[2]{%
+    \expandafter\providecommand\csname committeeName#1\endcsname{}%
+    \expandafter\providecommand\csname committeeData#1\endcsname{}%
+    \expandafter\newcommand\csname committeeMember#1\endcsname[2][#2]{%
+        \expandafter\renewcommand\csname committeeName#1\endcsname{##2}%
+        \expandafter\renewcommand\csname committeeData#1\endcsname{##1}}%
+}
+\ITU@defcommittee{A}{Chair}
+\ITU@defcommittee{B}{}
+\ITU@defcommittee{C}{}
+
+
+% -----------------------------------------------------------------------------
+% 7. Dedication / acknowledgment / epigraph data
+% -----------------------------------------------------------------------------
 
 % Dedication.
 \providecommand{\dedicationdata}{}
@@ -384,90 +349,214 @@
 
 
 % -----------------------------------------------------------------------------
-% Commands Setup
+% 8. Fonts and formatting hooks
 % -----------------------------------------------------------------------------
 
-% Customize the header and footer of plain pages (used for chapter title pages, etc.)
-\renewcommand{\ps@plainheader}{%
-    % Clear the footers for both odd and even pages
-    \renewcommand{\@oddfoot}{} % No footer on odd pages
-    \renewcommand{\@evenfoot}{} % No footer on even pages
+% Short text abbreviations.
+%\DeclareRobustCommand\onedot{\futurelet\@let@token\@onedot}
+%\def\@onedot{\ifx\@let@token.\else.\null\fi\xspace}
+%\def\eg{\emph{e.g}\onedot} \def\Eg{\emph{E.g}\onedot}
+%\def\ie{\emph{i.e}\onedot} \def\Ie{\emph{I.e}\onedot}
+%\def\cf{\emph{c.f}\onedot} \def\Cf{\emph{C.f}\onedot}
+%\def\etc{\emph{etc}\onedot} \def\vs{\emph{vs}\onedot}
+%\def\wrt{w.r.t\onedot} \def\dof{d.o.f\onedot}
+%\def\etal{\emph{et al}\onedot}
+\newcommand{\etal}{\emph{et al.}}
 
-    % Clear the headers for both odd and even pages
-    \renewcommand{\@oddhead}{} % No header on odd pages
-    \renewcommand{\@evenhead}{} % No header on even pages
+% Header element fonts.
+\renewcommand{\rightmarkformat}{\footnotesize}
+\renewcommand{\thepageformat}{\footnotesize}
+\renewcommand{\ABNTchapterfont}{\bfseries}
+\renewcommand{\ABNTtocchapterfont}{\bfseries}
+
+% Document element fonts. These configure the abnt font hooks; \ITU@authorformat
+% and \ITU@dateformat are English handles for the two hooks read in the sheets.
+\renewcommand{\instituicaoformat}{\huge}
+\renewcommand{\tituloformat}{\huge}
+\renewcommand{\autorformat}{\large}
+\let\ITU@authorformat\autorformat
+\let\ITU@dateformat\dataformat
+
+% Fonts for the new document elements.
+\providecommand{\departmentformat}{\LARGE}
+\providecommand{\programformat}{\Large}
+\providecommand{\thesisformat}{\normalsize}
+
+
+% -----------------------------------------------------------------------------
+% 9. Automatic IEEE-style citation builder
+% -----------------------------------------------------------------------------
+% Automatic IEEE-style bibliographic citation for the colophon, assembled from
+% the document metadata (authors, title, thesis type, university, place, year).
+% A manual \citationinfo{...} still overrides it (see \infopage).
+
+% Expandable emptiness test (used here and by the colophon).
+\newcommand{\ITU@ifempty}[1]{%
+    \expandafter\ifx\expandafter\relax\detokenize{#1}\relax
+        \expandafter\@firstoftwo\else\expandafter\@secondoftwo\fi}
+
+% \ITU@initials abbreviates all given names of a full name to initials and keeps
+% the surname, e.g. "Fabricio Batista Narcizo" -> "F. B. Narcizo".
+\newcommand{\ITU@initials}[1]{\ITU@ini#1 \ITU@ninil}
+\def\ITU@ini#1 #2\ITU@ninil{%
+    \ITU@ifempty{#2}{#1}{\ITU@fc#1\ITU@ninil.~\ITU@ini#2\ITU@ninil}}
+\def\ITU@fc#1#2\ITU@ninil{#1}
+% One-expansion wrapper so a stored name macro is split, not its single token.
+\newcommand{\ITU@initialsx}[1]{\expandafter\ITU@initials\expandafter{#1}}
+
+% Registered authors joined in IEEE order ("A", "A and B", "A, B, and C").
+\newcommand{\ITU@authorsieee}{%
+    \ifcase\value{ITU@numauthors}%
+    \or\ITU@initialsx{\ITU@authora}%
+    \or\ITU@initialsx{\ITU@authora} and \ITU@initialsx{\ITU@authorb}%
+    \or\ITU@initialsx{\ITU@authora}, \ITU@initialsx{\ITU@authorb}, and \ITU@initialsx{\ITU@authorc}%
+    \fi}
+
+% Year = last space-separated token of the date ("July, 2026" -> "2026").
+\newcommand{\ITU@citationyear}{\expandafter\ITU@lwstart\expandafter{\ABNTdatedata}}
+\def\ITU@lwstart#1{\ITU@lw#1 \ITU@ninil}
+\def\ITU@lw#1 #2\ITU@ninil{\ITU@ifempty{#2}{#1}{\ITU@lw#2\ITU@ninil}}
+
+% Place = the \city value with " -- " normalised to ", ".
+\newcommand{\ITU@citationplace}{{\fullexpandarg\StrSubstitute{\ABNTcitydata}{ -- }{, }}}
+
+% The assembled citation.
+\newcommand{\ITU@autocitation}{%
+    \ITU@authorsieee, ``\ABNTtitledata : \ABNTsubtitledata,'' \ABNTthesisdata,
+    \ABNTuniversitydata, \ITU@citationplace, \ITU@citationyear.}
+
+
+% -----------------------------------------------------------------------------
+% 10. Internal layout helpers (shared boilerplate)
+% -----------------------------------------------------------------------------
+% These factor out page-setup boilerplate that recurs across the cover, sheets,
+% pre-textual pages, lists and bibliography. They run in vertical mode between
+% page-building operations. Every line ends with % so no stray spaces leak.
+
+% Start on a fresh page, honouring the 'openright' option.
+\newcommand{\ITU@clearpage}{%
+    \if@openright\cleardoublepage\else\clearpage\fi
 }
 
-% Define the header and footer styles for chapter pages
+% Force single-column layout on this page, remembering to restore later.
+\newcommand{\ITU@onecolumn}{%
+    \if@twocolumn\@restonecoltrue\onecolumn\else\@restonecolfalse\newpage\fi
+}
+
+% Save the current two-column state and switch to a single column; the matching
+% \ITU@restorecolumns switches back if two-column mode was active.
+\newcommand{\ITU@savecolumns}{%
+    \ifthenelse{\boolean{@twocolumn}}{%
+        \setboolean{ABNTrestorecol}{true}\onecolumn
+    }{%
+        \setboolean{ABNTrestorecol}{false}%
+    }%
+}
+\newcommand{\ITU@restorecolumns}{%
+    \ifthenelse{\boolean{ABNTrestorecol}}{\twocolumn}{}%
+}
+
+% Place the decorative chapter/header glyph (style/#1) at the top of the page.
+\newcommand{\ITU@chapterglyph}[1]{%
+    \putat{-25}{-121}{\includegraphics[scale=0.08]{style/#1}}%
+}
+
+% Set / clear \chaptertype for the hyperlinked table of contents.
+\newcommand{\ITU@setchaptertype}[1]{%
+    \ifthenelse{\boolean{ABNThypertoc}}{\renewcommand{\chaptertype}{#1}}{}%
+}
+\newcommand{\ITU@clearchaptertype}{%
+    \ifthenelse{\boolean{ABNThypertoc}}{\renewcommand{\chaptertype}{}}{}%
+}
+
+% Place content at an absolute offset via a zero-sized picture.
+%   #1: X offset, #2: Y offset, #3: content.
+\newcommand{\putat}[3]{%
+    \begin{picture}(0,0)(0,0)% Start a zero-sized picture environment
+        \put(#1,#2){#3}% Place the content at the specified coordinates
+    \end{picture}%
+}
+
+
+% -----------------------------------------------------------------------------
+% 11. Page styles (headers and footers)
+% -----------------------------------------------------------------------------
+
+% Plain pages (chapter title pages, etc.): no header or footer.
+\renewcommand{\ps@plainheader}{%
+    \renewcommand{\@oddfoot}{}% No footer on odd pages
+    \renewcommand{\@evenfoot}{}% No footer on even pages
+    \renewcommand{\@oddhead}{}% No header on odd pages
+    \renewcommand{\@evenhead}{}% No header on even pages
+}
+
+% The ITU running page style: thesis type in the footer, an underlined header
+% with the running mark and page number.
 \newcommand{\ps@itu}{%
-    % Define the footer for odd pages
+    % Footer (odd and even pages): the thesis type.
     \renewcommand{\@oddfoot}{%
         \makebox[\textwidth]{%
-            \raisebox{-.5ex}{\footnotesize\ABNTthesisdata}% Footer content (e.g., work date)
+            \raisebox{-.5ex}{\footnotesize\ABNTthesisdata}%
         }%
     }%
-    
-    % Define the footer for even pages
     \renewcommand{\@evenfoot}{%
         \makebox[\textwidth]{%
-            \raisebox{-.5ex}{\footnotesize\ABNTthesisdata}% Footer content (e.g., work date)
+            \raisebox{-.5ex}{\footnotesize\ABNTthesisdata}%
         }%
     }%
-    
-    % Define the header for odd pages
+    % Header for odd pages: running mark left, page number right.
     \renewcommand{\@oddhead}{%
-        \underline{% Add underline to the header
+        \underline{%
             \makebox[\textwidth]{%
-                \raisebox{-.5ex}{}% Placeholder for additional adjustments
-                {\rightmarkformat\rightmark}% Right-aligned section/chapter title
-                \hfill% Space between title and page number
-                {\thepageformat\thepage}% Page number in specified format
+                \raisebox{-.5ex}{}%
+                {\rightmarkformat\rightmark}%
+                \hfill
+                {\thepageformat\thepage}%
             }%
         }%
     }%
-    
-    % Define the header for even pages
+    % Header for even pages: page number left, running mark right.
     \renewcommand{\@evenhead}{%
-        \underline{% Add underline to the header
+        \underline{%
             \makebox[\textwidth]{%
-                \raisebox{-.5ex}{}% Placeholder for additional adjustments
-                {\thepageformat\thepage}% Page number in specified format
-                \hfill% Space between page number and title
-                {\leftmarkformat\leftmark}% Left-aligned section/chapter title
+                \raisebox{-.5ex}{}%
+                {\thepageformat\thepage}%
+                \hfill
+                {\leftmarkformat\leftmark}%
             }%
         }%
     }%
-    
-    % Update the behavior for marking headers
-    \let\@mkboth\ABNTmarkboth% Use custom marking behavior
-    
-    % Customize chapter-level marking
+    % Custom header marking.
+    \let\@mkboth\ABNTmarkboth
     \renewcommand{\chaptermark}[1]{%
         \markboth{%
-            \ifnum\c@secnumdepth >\m@ne% Check section depth for numbering
-                \thechapter\ % Include chapter number if applicable
+            \ifnum\c@secnumdepth >\m@ne
+                \thechapter\ %
             \fi
-            ##1% Chapter title
+            ##1%
         }{%
-            \ifnum\c@secnumdepth >\m@ne% Check section depth for numbering
-                \thechapter\ % Include chapter number if applicable
+            \ifnum\c@secnumdepth >\m@ne
+                \thechapter\ %
             \fi
-            ##1% Chapter title
+            ##1%
         }%
     }%
-    
-    % Customize section-level marking
     \renewcommand{\sectionmark}[1]{%
         \markright{%
-            \ifnum\c@secnumdepth >\z@% Check section depth for numbering
-                \thesection\ % Include section number if applicable
+            \ifnum\c@secnumdepth >\z@
+                \thesection\ %
             \fi
-            ##1% Section title
+            ##1%
         }%
     }%
 }
 
-% Define the formatting for parts in the table of contents
+
+% -----------------------------------------------------------------------------
+% 12. Sectioning (parts, chapters, chapter heads)
+% -----------------------------------------------------------------------------
+
+% Part pages in the table of contents and on the page itself.
 \def\@part[#1]#2{%
     \ifnum \c@secnumdepth > -2\relax
         % If the section numbering depth allows parts to be numbered
@@ -506,30 +595,13 @@
     \@endpart% End the part
 }
 
-% Define a command to place content (e.g., a chapter picture) at a specific position
-% Arguments:
-%   #1: X-coordinate (horizontal position)
-%   #2: Y-coordinate (vertical position)
-%   #3: Content to be placed (e.g., picture or text)
-\newcommand{\putat}[3]{%
-    \begin{picture}(0,0)(0,0)% Start a zero-sized picture environment
-        \put(#1,#2){#3}% Place the content at the specified coordinates
-    \end{picture}%
-}
-
-% Redefine the \chapter command to customize chapter formatting
+% Chapter pages: custom glyph, plain style, pre-text/after-TOC handling.
 \renewcommand\chapter{%
     % Clear the page before a new chapter, handling 'openright' option
-    \if@openright
-        \cleardoublepage% Start new chapters on the right page
-    \else
-        \clearpage% Start new chapters on the next page
-    \fi
+    \ITU@clearpage
 
     % Add a custom chapter image at a specific position
-    \putat{-25}{-121}{%
-        \includegraphics[scale=0.08]{style/chapter.png}% Include the chapter image
-    }%
+    \ITU@chapterglyph{chapter.png}%
 
     % Apply the specific page style for the chapter title page
     \thispagestyle{\chaptertitlepagestyle}%
@@ -552,19 +624,14 @@
     \secdef\@chapter\@schapter
 }
 
-% Redefine the \pretextualchapter command to customize pre-textual chapter formatting
+% Pre-textual chapters (abstract, lists, ...): header glyph instead of chapter
+% glyph, always unnumbered.
 \renewcommand\pretextualchapter{%
     % Clear the page before starting a new pre-textual chapter, respecting 'openright' option
-    \if@openright
-        \cleardoublepage% Start on the right page
-    \else
-        \clearpage% Start on the next available page
-    \fi
+    \ITU@clearpage
 
     % Add a custom header image for pre-textual chapters at a specified position
-    \putat{-25}{-121}{%
-        \includegraphics[scale=0.08]{style/header.png}% Include the header image
-    }%
+    \ITU@chapterglyph{header.png}%
 
     % Add vertical space below the image
     \vspace{6pt}%
@@ -582,7 +649,7 @@
     \@schapter%
 }
 
-% Define the layout for the chapter name and number
+% Layout of the chapter name and number.
 \def\@makechapterhead#1{
     {
         % Add vertical spacing before the chapter heading
@@ -617,33 +684,20 @@
     \vspace{120pt}\par
 }
 
-% Define the layout for appendix (or annex) chapter name and number
+% Layout of the appendix/annex chapter name and number.
 \def\@makeanapchapterhead#1{
     {
         % Check if appendix/annex has an indicative indent
         \ifthenelse{\boolean{ABNTAnApIndicativoIndent}}{
-            % Check if the appendix/annex should use capitalization
-            \ifthenelse{\boolean{ABNTCapAnnexAppendix}}{
-                % Capitalized format
-                \vspace*{-90pt}\par
-                \begin{center}
-                    \hspace{370pt}% Adjust horizontal position
-                    \Large{\anapchaptername\par}% Display appendix/annex name
-                    \hspace{370pt}% Adjust horizontal position
-                    \resizebox{!}{1cm}{\thechapter\par}% Display chapter number
-                \end{center}
-                \vspace*{0pt}\par
-            }{
-                % Non-capitalized format
-                \vspace*{-90pt}\par
-                \begin{center}
-                    \hspace{370pt}% Adjust horizontal position
-                    \Large{\anapchaptername\par}% Display appendix/annex name
-                    \hspace{370pt}% Adjust horizontal position
-                    \resizebox{!}{1cm}{\thechapter\par}% Display chapter number
-                \end{center}
-                \vspace*{0pt}\par
-            }
+            % Appendix/annex name and number (independent of capitalization)
+            \vspace*{-90pt}\par
+            \begin{center}
+                \hspace{370pt}% Adjust horizontal position
+                \Large{\anapchaptername\par}% Display appendix/annex name
+                \hspace{370pt}% Adjust horizontal position
+                \resizebox{!}{1cm}{\thechapter\par}% Display chapter number
+            \end{center}
+            \vspace*{0pt}\par
         }{}
 
         % Add vertical spacing before the content
@@ -672,11 +726,7 @@
                 % If a title is provided, format it
                 \ifthenelse{\boolean{ABNTCapAnnexAppendix}}{
                     \centering\ABNTaposindicativoanap% Center the indicative append
-                    \ifthenelse{\boolean{ABNTcapchap}}{
-                        \vbox{\color{black} #1}\par% Uppercase title if enabled
-                    }{
-                        \vbox{\color{black} #1}\par% Regular case title
-                    }
+                    \vbox{\color{black} #1}\par% Title
                 }{}
             }
         \end{list}
@@ -686,35 +736,24 @@
     }
 }
 
-% Define the appendix/annex separator
+% Appendix/annex separator.
 \renewcommand*{\ABNTtravessao}{--}
 
 
 % -----------------------------------------------------------------------------
-% Table of Contents Setup
+% 13. Table of contents, lists and glossary
 % -----------------------------------------------------------------------------
 
-% Redefine the \tableofcontents command
+% Table of contents.
 \renewcommand{\tableofcontents}{
     % Handle two-column formatting
-    \ifthenelse{\boolean{@twocolumn}}{
-        \setboolean{ABNTrestorecol}{true}% Save the two-column state
-        \onecolumn% Switch to single-column layout
-    }{
-        \setboolean{ABNTrestorecol}{false}% No need to restore two-column state
-    }
+    \ITU@savecolumns
 
     % Clear the page before starting the table of contents, respecting 'openright' option
-    \if@openright
-        \cleardoublepage% Start on the right page
-    \else
-        \clearpage% Start on the next available page
-    \fi
+    \ITU@clearpage
 
     % Add a custom header image
-    \putat{-25}{-121}{%
-        \includegraphics[scale=0.08]{style/header.png}% Include the header image
-    }%
+    \ITU@chapterglyph{header.png}%
 
     % Add vertical space below the header
     \vspace{6pt}%
@@ -745,38 +784,23 @@
     \@starttoc{toc}%
 
     % Restore two-column layout if it was active before
-    \ifthenelse{\boolean{ABNTrestorecol}}{
-        \twocolumn% Switch back to two-column layout
-    }{}
+    \ITU@restorecolumns
 
     % Clear the page after the table of contents, respecting 'openright' option
-    \if@openright
-        \cleardoublepage% Start on the right page
-    \else
-        \clearpage% Start on the next available page
-    \fi
+    \ITU@clearpage
 
     % Mark that the table of contents has been processed
     \setboolean{ABNTaftertoc}{true}%
 }
-
-% Define an alias for the table of contents command
 \let\sumario\tableofcontents\relax
 
-% Redefine the \listoffigures command
+% List of figures.
 \renewcommand{\listoffigures}{
     % Handle two-column formatting
-    \ifthenelse{\boolean{@twocolumn}}{
-        \setboolean{ABNTrestorecol}{true}% Save the two-column state
-        \onecolumn% Switch to single-column layout
-    }{
-        \setboolean{ABNTrestorecol}{false}% No need to restore two-column state
-    }
+    \ITU@savecolumns
 
     % If hyperlinked TOC is enabled, adjust the chapter type
-    \ifthenelse{\boolean{ABNThypertoc}}{
-        \renewcommand{\chaptertype}{listoffigures.}% Set chapter type for hyperlinks
-    }{}
+    \ITU@setchaptertype{listoffigures.}%
 
     % Add the pretextual chapter heading for the list of figures
     \pretextualchapter{\listfigurename}
@@ -785,36 +809,23 @@
     \vspace{75pt}
 
     % Reset chapter type after the heading if hyperlinked TOC is enabled
-    \ifthenelse{\boolean{ABNThypertoc}}{
-        \renewcommand{\chaptertype}{}
-    }{}
+    \ITU@clearchaptertype
 
     % Start the table of contents for the list of figures
     \@starttoc{lof}
 
     % Restore two-column layout if it was active before
-    \ifthenelse{\boolean{ABNTrestorecol}}{
-        \twocolumn% Switch back to two-column layout
-    }{}
+    \ITU@restorecolumns
 }
-
-% Define an alias for \listoffigures as \listadefiguras
 \let\listadefiguras\listoffigures\relax
 
-% Redefine the \listoftables command
+% List of tables.
 \renewcommand\listoftables{
     % Handle two-column formatting
-    \ifthenelse{\boolean{@twocolumn}}{
-        \setboolean{ABNTrestorecol}{true}% Save the two-column state
-        \onecolumn% Switch to single-column layout
-    }{
-        \setboolean{ABNTrestorecol}{false}% No need to restore two-column state
-    }
+    \ITU@savecolumns
 
     % If hyperlinked TOC is enabled, adjust the chapter type
-    \ifthenelse{\boolean{ABNThypertoc}}{
-        \renewcommand{\chaptertype}{listoftables.}% Set chapter type for hyperlinks
-    }{}
+    \ITU@setchaptertype{listoftables.}%
 
     % Add the pretextual chapter heading for the list of tables
     \pretextualchapter{\listtablename}
@@ -823,48 +834,29 @@
     \vspace{75pt}
 
     % Reset chapter type after the heading if hyperlinked TOC is enabled
-    \ifthenelse{\boolean{ABNThypertoc}}{
-        \renewcommand{\chaptertype}{}
-    }{}
+    \ITU@clearchaptertype
 
     % Start the table of contents for the list of tables
     \@starttoc{lot}
 
     % Restore two-column layout if it was active before
-    \ifthenelse{\boolean{ABNTrestorecol}}{
-        \twocolumn% Switch back to two-column layout
-    }{}
+    \ITU@restorecolumns
 }
-
-% Define an alias for \listoftables as \listadetabelas
 \let\listadetabelas\listoftables\relax
 
-% Redefine the glossary section formatting
+% Glossary section heading.
 \renewcommand{\glossarysection}[2][\theglstoctitle]{%
     % Handle two-column formatting
-    \ifthenelse{\boolean{@twocolumn}}{
-        \setboolean{ABNTrestorecol}{true}% Save the two-column state
-        \onecolumn% Switch to single-column layout
-    }{
-        \setboolean{ABNTrestorecol}{false}% No need to restore two-column state
-    }
+    \ITU@savecolumns
 
     % If hyperlinked TOC is enabled, adjust the chapter type
-    \ifthenelse{\boolean{ABNThypertoc}}{
-        \renewcommand{\chaptertype}{listoftables.}% Set chapter type for hyperlinks (adjust if glossary-specific type is needed)
-    }{}
+    \ITU@setchaptertype{listoftables.}% (adjust if glossary-specific type is needed)
 
     % Clear the page before starting the glossary, respecting 'openright' option
-    \if@openright
-        \cleardoublepage% Start on the right page
-    \else
-        \clearpage% Start on the next available page
-    \fi
+    \ITU@clearpage
 
     % Add a custom header image
-    \putat{-25}{-121}{%
-        \includegraphics[scale=0.08]{style/header.png}% Include the header image
-    }%
+    \ITU@chapterglyph{header.png}%
 
     % Add vertical spacing below the header
     \vspace{6pt}%
@@ -876,7 +868,7 @@
     \@makeschapterhead{#2}% Use the provided title (#2) as the chapter heading
 }
 
-% Redefine the glossary preamble (content before the glossary entries)
+% Glossary preamble (content before the glossary entries).
 \renewcommand*{\glossarypreamble}{
     % Add vertical spacing before the glossary entries
     \vspace{70pt}
@@ -884,16 +876,16 @@
 
 
 % -----------------------------------------------------------------------------
-% Cover and Sheet Setup
+% 14. Cover, colophon and sheets
 % -----------------------------------------------------------------------------
 
 % Height of the top banner (~42% of an A4 page); the photo fills the remainder.
 \newlength{\bannerheight}
 \setlength{\bannerheight}{110mm}
 
-% Redefine the \capa (cover page) command as a full-bleed design: a solid
-% banner across the top holding the logo, institution details, title and work
-% type, with the cover photograph filling the lower portion of the page.
+% Cover page: a full-bleed design with a solid banner across the top holding the
+% logo, institution details, title and work type, and the cover photograph
+% filling the lower portion of the page.
 \renewcommand{\capa}{
     % Solid color used for the cover banner. The logo (style/logo.png) is a
     % white wordmark on a black background, so a black banner lets it blend in.
@@ -944,7 +936,7 @@
                  \ABNTifnotempty{\ABNTauthordata}{%
                     \vspace{6mm}%
                     {\fontsize{17pt}{16pt}\selectfont
-                    \ITUauthorslined\par}}%
+                    \ITU@authorslined\par}}%
                  \ABNTifnotempty{\ABNTthesisdata}{%
                      {\large\ABNTthesisdata\par}}};
         \end{tikzpicture}
@@ -953,10 +945,10 @@
 }
 
 % Colophon / information page (placed between the cover and the cover sheet).
-% A single label:value row: a fixed-width, left-aligned label followed by a
-% top-aligned paragraph box so long values wrap with a hanging indent under the
-% value column.
-\newcommand{\ITUinforow}[2]{%
+% \ITU@inforow lays out one label:value row: a fixed-width, left-aligned label
+% followed by a top-aligned paragraph box so long values wrap with a hanging
+% indent under the value column.
+\newcommand{\ITU@inforow}[2]{%
     \noindent\makebox[3cm][l]{#1}%
     \parbox[t]{\dimexpr\linewidth-3cm\relax}{#2}\par\smallskip
 }
@@ -965,16 +957,8 @@
 % left-aligned, echoing the imprint page of the reference design.
 \newcommand{\infopage}{%
     % Ensure the page starts on a fresh sheet.
-    \if@openright
-        \cleardoublepage
-    \else
-        \clearpage
-    \fi
-    \if@twocolumn
-        \@restonecoltrue\onecolumn
-    \else
-        \@restonecolfalse\newpage
-    \fi
+    \ITU@clearpage
+    \ITU@onecolumn
     \thispagestyle{empty}%
 
     {%
@@ -1018,7 +1002,7 @@
             \noindent
             {\small By\par}
             \noindent
-            {\small\ITUauthorslined\par}
+            {\small\ITU@authorslined\par}
         }%
         \bigskip
 
@@ -1027,24 +1011,24 @@
             \setlength{\parskip}{0pt}%
             \noindent
             \ABNTifnotempty{\ABNTsupervisordata}{%
-                \ITUinforow{\small Supervisor:}%
+                \ITU@inforow{\small Supervisor:}%
                            {\small\ABNTsupervisordata}%
             }%
             \noindent
             \ABNTifnotempty{\ABNTcosupervisordata}{%
-                \ITUinforow{\small\ITUcosuplabel}%
-                           {\small\ITUcosupinline}%
+                \ITU@inforow{\small\ITU@cosuplabel}%
+                           {\small\ITU@cosupinline}%
             }%
         }%
         \medskip
 
         % Copyright, publisher, and citation.
         \ABNTifnotempty{\ABNTcopyrightdata}{%
-            \ITUinforow{\small Copyright:}%
+            \ITU@inforow{\small Copyright:}%
                        {\small\ABNTcopyrightdata}%
         }%
 
-        \ITUinforow{\small Published by:}{%
+        \ITU@inforow{\small Published by:}{%
             \small\ABNTuniversitydata, \ABNTdepartmentdata
             \ABNTifnotempty{\ABNTuniversityaddressdata}{\newline\ABNTuniversityaddressdata}%
             \ABNTifnotempty{\ABNTuniversityphonenumberdata}{\newline\ABNTuniversityphonenumberdata}%
@@ -1053,8 +1037,8 @@
 
         % The citation is generated automatically from the document metadata; a
         % manual \citationinfo{...} overrides it when provided.
-        \ITUinforow{\small Citation:}%
-                   {\small\expandafter\ITU@ifempty\expandafter{\ABNTcitationdata}{\ITUautocitation}{\ABNTcitationdata}}%
+        \ITU@inforow{\small Citation:}%
+                   {\small\expandafter\ITU@ifempty\expandafter{\ABNTcitationdata}{\ITU@autocitation}{\ABNTcitationdata}}%
 
         \vspace*{1cm}%
     }%
@@ -1098,23 +1082,15 @@
     \end{titlepage}%
 }
 
-% Redefine the \folhaderosto (cover sheet) command
+% Cover sheet.
 \renewcommand{\folhaderosto}{
     % A Research Project has no formal cover sheet; skip the whole page.
     \ifITUresearch\else
     % Ensure the cover sheet starts on the correct page
-    \if@openright
-        \cleardoublepage % Start on the right page
-    \else
-        \clearpage % Start on the next available page
-    \fi
+    \ITU@clearpage
 
     % Handle two-column formatting
-    \if@twocolumn
-        \@restonecoltrue\onecolumn % Switch to single-column layout
-    \else
-        \@restonecolfalse\newpage % Add a new page if not in two-column mode
-    \fi
+    \ITU@onecolumn
 
     % Set the initial vertical alignment and page style
     \vspace*{0cm}
@@ -1136,7 +1112,7 @@
     \thispagestyle{empty}
     \begin{center}
         \ABNTifnotempty{\ABNTauthordata}{%
-            \ITUauthorformat\ITUauthorslined % Format and display the author name(s)
+            \ITU@authorformat\ITU@authorslined % Format and display the author name(s)
         }
     \end{center}
 
@@ -1163,7 +1139,7 @@
     % Display the date
     \begin{center}
         \ABNTifnotempty{\ABNTdatedata}{%
-            {\ITUdateformat\ABNTdatedata} % Format and display the date
+            {\ITU@dateformat\ABNTdatedata} % Format and display the date
         }
     \end{center}
 
@@ -1171,30 +1147,22 @@
     % one signature block per registered author. The blocks are distributed in
     % the remaining space so one, two, or three authors all fit on the page.
     \vfill
-    \ITUsignatures
+    \ITU@signatures
 
     % Fill the remaining space on the page
     \vspace*{\fill}
     \fi
 }
 
-% Define the \folhaaprovacao (approval sheet) command
+% Approval sheet (Certificate of Approval).
 \newcommand{\folhaaprovacao}{
     % The Certificate of Approval is only used for Ph.D. dissertations.
     \ifITUphd
     % Ensure the approval sheet starts on the correct page
-    \if@openright
-        \cleardoublepage % Start on the right page
-    \else
-        \clearpage % Start on the next available page
-    \fi
+    \ITU@clearpage
 
     % Handle two-column formatting
-    \if@twocolumn
-        \@restonecoltrue\onecolumn % Switch to single-column layout
-    \else
-        \@restonecolfalse\newpage % Add a new page if not in two-column mode
-    \fi
+    \ITU@onecolumn
 
     % Set the initial vertical alignment and page style
     \vspace*{0cm}
@@ -1228,7 +1196,7 @@
     \begin{addmargin}[6em]{6em} % Add margins for better alignment
         \begin{center}
             \begin{ITUsinglespacing}
-                The Ph.D. Degree Dissertation of~\ITUauthorsinline~has been examined
+                The Ph.D. Degree Dissertation of~\ITU@authorsinline~has been examined
                 and approved by the dissertation committee as satisfactory for
                 the dissertation required for the Ph.D. degree in Computer Science.
             \end{ITUsinglespacing}
@@ -1274,21 +1242,39 @@
     \fi
 }
 
-% Define the \dedicationpage (dedication page) command
+
+% -----------------------------------------------------------------------------
+% 15. Pre-textual pages (dedication, acknowledgment, epigraph)
+% -----------------------------------------------------------------------------
+
+% Pre-textual text formatting environment.
+\newenvironment{pretextualtext}{
+    % Start the environment with single-line spacing
+    \begin{ITUsinglespacing}
+        \small % Set text size to small
+        % Configure a list to control margins and indentation
+        \begin{list}{}{
+            \setlength{\listparindent}{0cm} % No paragraph indentation
+            \setlength{\itemindent}{\listparindent} % Item indentation matches paragraph indentation
+            \setlength{\rightmargin}{0cm} % No right margin
+            \setlength{\leftmargin}{5cm} % Left margin set to 5cm
+            \setlength{\parsep}{0pt} % No extra spacing between paragraphs
+        }
+        \item\relax % Start the list with a relaxed item
+    }
+    {
+        % End the list and spacing environment
+        \end{list}
+    \end{ITUsinglespacing}
+}
+
+% Dedication page.
 \newcommand{\dedicationpage}{
     % Ensure the dedication page starts on the correct page
-    \if@openright
-        \cleardoublepage % Start on the right page
-    \else
-        \clearpage % Start on the next available page
-    \fi
+    \ITU@clearpage
 
     % Handle two-column formatting
-    \if@twocolumn
-        \@restonecoltrue\onecolumn % Switch to single-column layout
-    \else
-        \@restonecolfalse\newpage % Add a new page if not in two-column mode
-    \fi
+    \ITU@onecolumn
 
     % Set the page style and initial spacing
     \thispagestyle{empty} % No headers or footers
@@ -1307,21 +1293,13 @@
     \mbox{} % Add an empty box to ensure spacing
 }
 
-% Define the \acknowledgmentpage (acknowledgment page) command
+% Acknowledgment page.
 \newcommand{\acknowledgmentpage}{
     % Ensure the acknowledgment page starts on the correct page
-    \if@openright
-        \cleardoublepage % Start on the right page
-    \else
-        \clearpage % Start on the next available page
-    \fi
+    \ITU@clearpage
 
     % Handle two-column formatting
-    \if@twocolumn
-        \@restonecoltrue\onecolumn % Switch to single-column layout
-    \else
-        \@restonecolfalse\newpage % Add a new page if not in two-column mode
-    \fi
+    \ITU@onecolumn
 
     % Add the acknowledgment chapter heading
     \pretextualchapter{\acknowledgmentname} % Use the predefined acknowledgment name
@@ -1330,9 +1308,7 @@
     \vspace{80pt}
 
     % Reset chapter type if hyperlinked TOC is enabled
-    \ifthenelse{\boolean{ABNThypertoc}}{
-        \renewcommand{\chaptertype}{} % Clear chapter type for hyperlinks
-    }{}
+    \ITU@clearchaptertype
 
     % Display the acknowledgment text, right-aligned
     \begin{flushright}
@@ -1343,21 +1319,13 @@
     \newpage
 }
 
-% Define the \epigraphpage (epigraph page) command
+% Epigraph page.
 \newcommand{\epigraphpage}{
     % Ensure the epigraph page starts on the correct page
-    \if@openright
-        \cleardoublepage % Start on the right page
-    \else
-        \clearpage % Start on the next available page
-    \fi
+    \ITU@clearpage
 
     % Handle two-column formatting
-    \if@twocolumn
-        \@restonecoltrue\onecolumn % Switch to single-column layout
-    \else
-        \@restonecolfalse\newpage % Add a new page if not in two-column mode
-    \fi
+    \ITU@onecolumn
 
     % Set the page style to empty (no headers or footers)
     \thispagestyle{empty}
@@ -1385,47 +1353,20 @@
 
 
 % -----------------------------------------------------------------------------
-% Pre-Textual Elements Setup
+% 16. Abstract environments (English and Danish)
 % -----------------------------------------------------------------------------
 
-% Define the pre-textual text formatting environment
-\newenvironment{pretextualtext}{
-    % Start the environment with single-line spacing
-    \begin{ITUsinglespacing}
-        \small % Set text size to small
-        % Configure a list to control margins and indentation
-        \begin{list}{}{
-            \setlength{\listparindent}{0cm} % No paragraph indentation
-            \setlength{\itemindent}{\listparindent} % Item indentation matches paragraph indentation
-            \setlength{\rightmargin}{0cm} % No right margin
-            \setlength{\leftmargin}{5cm} % Left margin set to 5cm
-            \setlength{\parsep}{0pt} % No extra spacing between paragraphs
-        }
-        \item\relax % Start the list with a relaxed item
-    }
-    {
-        % End the list and spacing environment
-        \end{list}
-    \end{ITUsinglespacing}
-}
-
-% Redefine the abstract formatting
+% Abstract heading name.
 \renewcommand{\ABNTabstractname}{Abstract}
 
-% Define the abstract environment. Uses \RenewEnviron (environ package) so the body
-% text can be captured into \ABNTsummarydata and reused verbatim on the back cover.
+% English abstract. Uses \RenewEnviron (environ package) so the body text can be
+% captured into \ABNTsummarydata and reused verbatim on the back cover.
 \RenewEnviron{abstract}{
     % Ensure the abstract starts on the correct page
-    \if@openright
-        \cleardoublepage % Start on the right page
-    \else
-        \clearpage % Start on the next available page
-    \fi
+    \ITU@clearpage
 
     % Handle chapter type for hyperlinked table of contents (if enabled)
-    \ifthenelse{\boolean{ABNThypertoc}}{
-        \renewcommand{\chaptertype}{abstract.} % Set the chapter type for hyperlinks
-    }{}
+    \ITU@setchaptertype{abstract.}%
 
     % Add the abstract chapter heading
     \pretextualchapter{\ABNTabstractname}
@@ -1434,9 +1375,7 @@
     \vspace{80pt}
 
     % Reset chapter type if hyperlinked TOC is enabled
-    \ifthenelse{\boolean{ABNThypertoc}}{
-        \renewcommand{\chaptertype}{} % Clear the chapter type
-    }{}
+    \ITU@clearchaptertype
 
     % Capture the body so the back cover (\backcover) can reprint it verbatim.
     \global\let\ABNTsummarydata\BODY
@@ -1450,22 +1389,16 @@
     \newpage
 }
 
-% Define the Danish abstract title
+% Danish abstract heading name.
 \newcommand{\danishabstractname}{Resume}
 
-% Define the Danish abstract environment
+% Danish abstract.
 \newenvironment{resume}{
     % Ensure the Danish abstract starts on the correct page
-    \if@openright
-        \cleardoublepage % Start on the right page
-    \else
-        \clearpage % Start on the next available page
-    \fi
+    \ITU@clearpage
 
     % Handle chapter type for hyperlinked table of contents (if enabled)
-    \ifthenelse{\boolean{ABNThypertoc}}{
-        \renewcommand{\chaptertype}{danishabstract.} % Set the chapter type for hyperlinks
-    }{}
+    \ITU@setchaptertype{danishabstract.}%
 
     % Add the Danish abstract chapter heading
     \pretextualchapter{\danishabstractname}
@@ -1474,9 +1407,7 @@
     \vspace{80pt}
 
     % Reset chapter type if hyperlinked TOC is enabled
-    \ifthenelse{\boolean{ABNThypertoc}}{
-        \renewcommand{\chaptertype}{} % Clear the chapter type
-    }{}
+    \ITU@clearchaptertype
 
     % Start the Danish abstract content with 1.5 line spacing
     \begin{ITUonehalfspacing}
@@ -1488,22 +1419,14 @@
 
 
 % -----------------------------------------------------------------------------
-% References Setup
+% 17. Bibliography
 % -----------------------------------------------------------------------------
-
-% Redefine the bibliography environment
 \renewenvironment{thebibliography}[1]{
     % Ensure the bibliography starts on a new page or right page
-    \if@openright
-        \cleardoublepage % Start on the right page
-    \else
-        \clearpage % Start on the next available page
-    \fi
+    \ITU@clearpage
 
     % Add a custom header image
-    \putat{-25}{-121}{%
-        \includegraphics[scale=0.08]{style/header.png} % Header image
-    }
+    \ITU@chapterglyph{header.png}%
 
     % Add vertical spacing and set the page style
     \vspace{6pt}

@@ -667,71 +667,64 @@
 % Cover and Sheet Setup
 % -----------------------------------------------------------------------------
 
-% Redefine the \capa (cover page) command
+% Height of the top banner (~42% of an A4 page); the photo fills the remainder.
+\newlength{\bannerheight}
+\setlength{\bannerheight}{110mm}
+
+% Redefine the \capa (cover page) command as a full-bleed design: a solid
+% banner across the top holding the logo, institution details, title and work
+% type, with the cover photograph filling the lower portion of the page.
 \renewcommand{\capa}{
+    % Solid color used for the cover banner. The logo (style/logo.png) is a
+    % white wordmark on a black background, so a black banner lets it blend in.
+    \definecolor{coverbanner}{RGB}{0,0,0}
     \begin{titlepage} % Start the title page
         \setcounter{page}{0} % Set the page number to 0
-        \espaco{1.1} % Set the line spacing
+        \thispagestyle{empty} % No header/footer on the cover
 
-        % Add institutional details (if available)
-        \begin{center}
-            \ABNTifnotempty{\ABNTinstituicaodata}{%
-                {\instituicaoformat\ABNTinstituicaodata\par}% Institution name
-            }
-            \ABNTifnotempty{\ABNTdepartamentodata}{%
-                {\departamentoformat\ABNTdepartamentodata\par}% Department name
-            }
-            \ABNTifnotempty{\ABNTprogramadata}{%
-                {\programaformat\ABNTprogramadata\par}% Program name
-            }
-        \end{center}
+        % This full-page overlay uses the current page node, which cannot be
+        % externalized, so skip TikZ externalization for this picture.
+        \tikzexternaldisable
+        \begin{tikzpicture}[remember picture, overlay]
+            % --- Cover photograph: full page width, clipped to the lower
+            %     region so its aspect ratio is preserved (bottom is cropped).
+            \begin{scope}
+                \clip ([yshift=-\bannerheight]current page.north west)
+                      rectangle (current page.south east);
+                \node[anchor=north, inner sep=0]
+                    at ([yshift=-\bannerheight]current page.north)
+                    {\includegraphics[width=\paperwidth]{style/cover.png}};
+            \end{scope}
 
-        % Add spacing between sections
-        \vfill\vfill\vfill
+            % --- Top banner.
+            \fill[coverbanner] (current page.north west)
+                  rectangle ([yshift=-\bannerheight]current page.north east);
 
-        % Add title and work type details (if available)
-        \begin{center}
-            \ABNTifnotempty{\ABNTtitulodata}{%
-                {\tituloformat\ABNTtitulodata\par}% Title of the work
-            }
-            \ABNTifnotempty{\ABNTtrabalhodata}{%
-                {\trabalhoformat\ABNTtrabalhodata\par}% Type of work (e.g., dissertation, thesis)
-            }
-        \end{center}
+            % --- Institution logo, top-left corner of the banner.
+            \node[anchor=north west, inner sep=0]
+                at ([shift={(12mm,-12mm)}]current page.north west)
+                {\includegraphics[width=16mm]{style/logo.png}};
 
-        % Add spacing for the author and supervisor sections
-        \vfill
+            % --- Institution and department, top-right corner of the banner.
+            \node[anchor=north east, align=right, text=white, text width=95mm]
+                at ([shift={(-12mm,-12mm)}]current page.north east)
+                {\sffamily
+                 \ABNTifnotempty{\ABNTinstituicaodata}{%
+                     {\bfseries\normalsize\ABNTinstituicaodata\par}}%
+                 \vspace{-1.75mm}%
+                 \ABNTifnotempty{\ABNTdepartamentodata}{%
+                     {\mdseries\normalsize\ABNTdepartamentodata\par}}};
 
-        % Add author and supervisor details (if available)
-        \begin{center}
-            \ABNTifnotempty{\ABNTautordata}{%
-                {By:}\protect\\
-                {\autorformat\ABNTautordata}\protect\\ % Author name
-                \vspace{1.4cm}
-            }
-            \ABNTifnotempty{\ABNTorientadordata}{%
-                {Supervisor:}\protect\\
-                {\orientadorformat\ABNTorientadordata}\protect\\ % Supervisor name
-                \vspace{0.7cm}
-            }
-            \ABNTifnotempty{\ABNTcoorientadordata}{%
-                {Co-supervisor:}\protect\\
-                {\coorientadorformat\ABNTcoorientadordata}% Co-supervisor name
-            }
-        \end{center}
-
-        % Add spacing for the location and date
-        \vfill\vfill
-
-        % Add location and date details (if available)
-        \begin{center}
-            \ABNTifnotempty{\ABNTlocaldata}{%
-                {\localformat\ABNTlocaldata}\par% Location
-            }
-            \ABNTifnotempty{\ABNTdatadata}{%
-                {\dataformat\ABNTdatadata}% Date
-            }
-        \end{center}
+            % --- Title, programme and work type, lower-left of the banner.
+            \node[anchor=south west, align=left, text=white, text width=170mm]
+                at ($(current page.north west)+(12mm,12mm)-(0pt,\bannerheight)$)
+                {\sffamily
+                 \ABNTifnotempty{\ABNTtitulodata}{%
+                    {\bfseries\fontsize{25pt}{24pt}\selectfont\ABNTtitulodata\par}}%
+                 \ABNTifnotempty{\ABNTtrabalhodata}{%
+                     \vspace{2mm}{\mdseries\LARGE\ABNTtrabalhodata\par}}};
+        \end{tikzpicture}
+        \tikzexternalenable
     \end{titlepage}
 }
 

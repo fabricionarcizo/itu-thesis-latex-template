@@ -63,22 +63,23 @@
 
 % Define a new element in the document (department).
 \providecommand{\ABNTdepartamentodata}{}
-\newcommand{\departamento}[1]{\renewcommand{\ABNTdepartamentodata}{#1}}
+\newcommand{\departament}[1]{\renewcommand{\ABNTdepartamentodata}{#1}}
 
 % Define a new element in the document (program).
 \providecommand{\ABNTprogramadata}{}
-\newcommand{\programa}[1]{\renewcommand{\ABNTprogramadata}{#1}}
+\newcommand{\program}[1]{\renewcommand{\ABNTprogramadata}{#1}}
 
-% Define a new element in the document (work).
-\providecommand{\ABNTtrabalhodata}{}
-\newcommand{\trabalho}[1]{\renewcommand{\ABNTtrabalhodata}{#1}}
+% Define a new element in the document (thesis type).
+\providecommand{\ABNTthesisdata}{}
+\newcommand{\thesis}[1]{\renewcommand{\ABNTthesisdata}{#1}}
+
+% Define a new element in the document (subtitle).
+\providecommand{\ABNTsubtitledata}{}
+\newcommand{\subtitle}[1]{\renewcommand{\ABNTsubtitledata}{#1}}
 
 % Translate the main commands to English.
 \newcommand{\university}[1]{\instituicao{#1}}
-\newcommand{\departament}[1]{\departamento{#1}}
-\newcommand{\program}[1]{\programa{#1}}
 \newcommand{\maintitle}[1]{\titulo{#1}}
-\newcommand{\subtitle}[1]{\trabalho{#1}}
 \renewcommand{\author}[1]{\autor{#1}}
 \newcommand{\supervisor}[1]{\orientador{#1}}
 \newcommand{\cosupervisor}[1]{\coorientador{#1}}
@@ -113,9 +114,36 @@
 \renewcommand{\autorformat}{\large}
 
 % Setup the font style to the new document elements.
-\providecommand{\departamentoformat}{\LARGE}
-\providecommand{\programaformat}{\Large}
-\providecommand{\trabalhoformat}{\normalsize}
+\providecommand{\departamentformat}{\LARGE}
+\providecommand{\programformat}{\Large}
+\providecommand{\thesisformat}{\normalsize}
+
+% Thesis type configuration: bachelor | master | phd | research. A single
+% \thesistype command drives the document level: it sets a boolean for the
+% chosen type, auto-fills the type label (\subtitle) and the long degree
+% wording, and lets the cover/approval sheets self-suppress accordingly.
+\newif\ifITUphd
+\newif\ifITUmaster
+\newif\ifITUbachelor
+\newif\ifITUresearch
+\providecommand{\thesisdegreelong}{}   % e.g. "Doctor of Philosophy"
+\newcommand{\thesistype}[1]{%
+    \ITUphdfalse\ITUmasterfalse\ITUbachelorfalse\ITUresearchfalse
+    \renewcommand{\thesisdegreelong}{}%
+    \ifthenelse{\equal{#1}{phd}}{%
+        \ITUphdtrue \thesis{Ph.D. Thesis}%
+        \renewcommand{\thesisdegreelong}{Doctor of Philosophy}%
+    }{\ifthenelse{\equal{#1}{master}}{%
+        \ITUmastertrue \thesis{Master's Thesis}%
+        \renewcommand{\thesisdegreelong}{Master of Science}%
+    }{\ifthenelse{\equal{#1}{bachelor}}{%
+        \ITUbachelortrue \thesis{Bachelor's Thesis}%
+        \renewcommand{\thesisdegreelong}{Bachelor of Science}%
+    }{\ifthenelse{\equal{#1}{research}}{%
+        \ITUresearchtrue \thesis{Research Project}%
+    }{\PackageError{ITU}{Unknown thesis type '#1' (use bachelor, master, phd, or research)}{}%
+    }}}}%
+}
 
 % Setup previous degrees.
 \providecommand{\masterDegree}{}
@@ -183,14 +211,14 @@
     % Define the footer for odd pages
     \renewcommand{\@oddfoot}{%
         \makebox[\textwidth]{%
-            \raisebox{-.5ex}{\footnotesize\ABNTtrabalhodata}% Footer content (e.g., work date)
+            \raisebox{-.5ex}{\footnotesize\ABNTthesisdata}% Footer content (e.g., work date)
         }%
     }%
     
     % Define the footer for even pages
     \renewcommand{\@evenfoot}{%
         \makebox[\textwidth]{%
-            \raisebox{-.5ex}{\footnotesize\ABNTtrabalhodata}% Footer content (e.g., work date)
+            \raisebox{-.5ex}{\footnotesize\ABNTthesisdata}% Footer content (e.g., work date)
         }%
     }%
     
@@ -708,8 +736,7 @@
             % --- Institution and department, top-right corner of the banner.
             \node[anchor=north east, align=right, text=white, text width=95mm]
                 at ([shift={(-12mm,-12mm)}]current page.north east)
-                {\sffamily
-                 \ABNTifnotempty{\ABNTinstituicaodata}{%
+                {\ABNTifnotempty{\ABNTinstituicaodata}{%
                      {\bfseries\normalsize\ABNTinstituicaodata\par}}%
                  \vspace{-1.75mm}%
                  \ABNTifnotempty{\ABNTdepartamentodata}{%
@@ -718,11 +745,14 @@
             % --- Title, programme and work type, lower-left of the banner.
             \node[anchor=south west, align=left, text=white, text width=170mm]
                 at ($(current page.north west)+(12mm,12mm)-(0pt,\bannerheight)$)
-                {\sffamily
-                 \ABNTifnotempty{\ABNTtitulodata}{%
+                {\ABNTifnotempty{\ABNTtitulodata}{%
                     {\bfseries\fontsize{25pt}{24pt}\selectfont\ABNTtitulodata\par}}%
-                 \ABNTifnotempty{\ABNTtrabalhodata}{%
-                     \vspace{2mm}{\mdseries\LARGE\ABNTtrabalhodata\par}}};
+                 \ABNTifnotempty{\ABNTsubtitledata}{%
+                    {\fontsize{22pt}{24pt}\selectfont\ABNTsubtitledata\par}}%
+                 \ABNTifnotempty{\ABNTautordata}{%
+                     \vspace{2mm}{\mdseries\LARGE\ABNTautordata\par}}
+                 \ABNTifnotempty{\ABNTthesisdata}{%
+                     {\mdseries\large\ABNTthesisdata\par}}};
         \end{tikzpicture}
         \tikzexternalenable
     \end{titlepage}
@@ -730,6 +760,8 @@
 
 % Redefine the \folhaderosto (cover sheet) command
 \renewcommand{\folhaderosto}{
+    % A Research Project has no formal cover sheet; skip the whole page.
+    \ifITUresearch\else
     % Ensure the cover sheet starts on the correct page
     \if@openright
         \cleardoublepage % Start on the right page
@@ -751,7 +783,7 @@
     % Display the title
     \begin{center}
         \ABNTifnotempty{\ABNTtitulodata}{%
-            \programaformat{\ABNTtitulodata} % Format and display the title
+            \programformat{\ABNTtitulodata} % Format and display the title
         }
     \end{center}
 
@@ -783,7 +815,7 @@
     \vspace{0.75cm}
     \begin{addmargin}[8em]{8em}
         \begin{center}
-            A thesis submitted in partial fulfillment of the requirements for the degree of Doctor of Philosophy in the~\ABNTdepartamentodata\\
+            A thesis submitted in partial fulfillment of the requirements for the degree of \thesisdegreelong{} in the~\ABNTdepartamentodata\\
             \ABNTinstituicaodata % Institution and department details
         \end{center}
     \end{addmargin}
@@ -795,23 +827,20 @@
         }
     \end{center}
 
+    % Author signature.
     % Add the author's signature
-    \vspace{4cm}
+    \vspace{6cm}
     Signature of the Author \hrulefill \par
-    \vspace{1.25cm}
-
-    % Add the acceptance signature section
-    \begin{espacosimples}
-        Accepted by \hrulefill \\
-        \hspace*{3cm}Coordinator, Computer Science Department \hspace*{3cm}Date
-    \end{espacosimples}
 
     % Fill the remaining space on the page
     \vspace*{\fill}
+    \fi
 }
 
 % Define the \folhaaprovacao (approval sheet) command
 \newcommand{\folhaaprovacao}{
+    % The Certificate of Approval is only used for Ph.D. dissertations.
+    \ifITUphd
     % Ensure the approval sheet starts on the correct page
     \if@openright
         \cleardoublepage % Start on the right page
@@ -901,6 +930,7 @@
             Date
         \end{espacosimples}
     \end{addmargin}
+    \fi
 }
 
 % Define the \dedicationpage (dedication page) command

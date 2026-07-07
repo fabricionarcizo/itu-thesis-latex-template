@@ -64,12 +64,13 @@
 \renewcommand{\thetable}{\thechapter.\arabic{table}}
 
 % Define a new element in the document (department).
-\providecommand{\ABNTdepartamentodata}{}
-\newcommand{\departament}[1]{\renewcommand{\ABNTdepartamentodata}{#1}}
+\providecommand{\ABNTdepartmentdata}{}
+\newcommand{\department}[1]{\renewcommand{\ABNTdepartmentdata}{#1}}
+\newcommand{\departament}[1]{\department{#1}} % backward-compatible alias
 
 % Define a new element in the document (program).
-\providecommand{\ABNTprogramadata}{}
-\newcommand{\program}[1]{\renewcommand{\ABNTprogramadata}{#1}}
+\providecommand{\ABNTprogramdata}{}
+\newcommand{\program}[1]{\renewcommand{\ABNTprogramdata}{#1}}
 
 % Define a new element in the document (thesis type).
 \providecommand{\ABNTthesisdata}{}
@@ -98,18 +99,53 @@
 % back cover can reprint it without duplicating the source text.
 \providecommand{\ABNTsummarydata}{}
 
-% Translate the main commands to English.
-\newcommand{\university}[1]{\instituicao{#1}}
-\newcommand{\maintitle}[1]{\titulo{#1}}
+% --- abnt compatibility bridge ---------------------------------------------
+% The underlying document class (abnt.cls, classic abnTeX) exposes a Portuguese
+% API. This block is the single seam between that API and the English names used
+% throughout the rest of this package: everything below reads in English, and
+% the Portuguese identifiers are confined here.
+
+% English storage macros for the abnt metadata fields. Fields with an ITU setter
+% (below) are stored as real macros so their *value* is available for low-level
+% expansion (e.g. \ITUcitationyear), and mirrored into the abnt field. Author and
+% co-supervisor are derived lists, so they are simple read-aliases (safe:
+% \ABNTifnotempty fully expands its argument before testing it).
+\providecommand{\ABNTuniversitydata}{}
+\providecommand{\ABNTtitledata}{}
+\providecommand{\ABNTsupervisordata}{}
+\providecommand{\ABNTcitydata}{}
+\providecommand{\ABNTdatedata}{}
+\newcommand{\ABNTauthordata}{\ABNTautordata}
+\newcommand{\ABNTcosupervisordata}{\ABNTcoorientadordata}
+
+% English-named handles for the abnt author/co-supervisor field setters, used to
+% push the derived inline lists into the abnt fields.
+\let\ABNTsyncauthorfield\autor
+\let\ABNTsynccosupervisorfield\coorientador
+
+% Translate the main commands to English. Each metadata setter stores the value
+% into its English macro and mirrors it into the corresponding abnt field.
+\newcommand{\university}[1]{\renewcommand{\ABNTuniversitydata}{#1}\instituicao{#1}}
+\newcommand{\maintitle}[1]{\renewcommand{\ABNTtitledata}{#1}\titulo{#1}}
 \renewcommand{\author}[1]{\ITUaddauthor{#1}}
-\newcommand{\supervisor}[1]{\orientador{#1}}
+\newcommand{\supervisor}[1]{\renewcommand{\ABNTsupervisordata}{#1}\orientador{#1}}
 \newcommand{\cosupervisor}[1]{\ITUaddcosupervisor{#1}}
-\newcommand{\city}[1]{\local{#1}}
+\newcommand{\city}[1]{\renewcommand{\ABNTcitydata}{#1}\local{#1}}
+% The date setter stores into the English macro and the abnt field; \date is the
+% English name and \data (abnt's) is kept working as an alias.
+\renewcommand{\data}[1]{\renewcommand{\ABNTdatedata}{#1}\renewcommand{\ABNTdatadata}{#1}}
+\let\date\data
 \newcommand{\cover}[1]{\capa}
 \newcommand{\contents}{\sumario}
 \renewcommand{\annexname}{Annex}
 \newcommand{\coversheet}[1]{\folhaderosto}
 \newcommand{\approvalsheet}[1]{\folhaaprovacao}
+
+% English spacing environments, equivalent to abnt.cls's espacosimples /
+% espacoumemeio (which wrap setspace's `spacing` with ratios 1.0 / 1.35).
+\newenvironment{ITUsinglespacing}{\begin{spacing}{1.0}}{\end{spacing}}
+\newenvironment{ITUonehalfspacing}{\begin{spacing}{1.35}}{\end{spacing}}
+% --- end abnt compatibility bridge -----------------------------------------
 
 % Define new short commands.
 %\DeclareRobustCommand\onedot{\futurelet\@let@token\@onedot}
@@ -128,13 +164,17 @@
 \renewcommand{\ABNTchapterfont}{\bfseries}
 \renewcommand{\ABNTtocchapterfont}{\bfseries}
 
-% Setup the font style to the document elements.
+% Setup the font style to the document elements. These configure the abnt font
+% hooks; \ITUauthorformat / \ITUdateformat are English handles for the two hooks
+% read in the body below.
 \renewcommand{\instituicaoformat}{\huge}
 \renewcommand{\tituloformat}{\huge}
 \renewcommand{\autorformat}{\large}
+\let\ITUauthorformat\autorformat
+\let\ITUdateformat\dataformat
 
 % Setup the font style to the new document elements.
-\providecommand{\departamentformat}{\LARGE}
+\providecommand{\departmentformat}{\LARGE}
 \providecommand{\programformat}{\Large}
 \providecommand{\thesisformat}{\normalsize}
 
@@ -158,7 +198,7 @@
         \else\PackageError{ITU}{At most three authors are supported}%
             {Use no more than three \string\author\space commands.}%
     \fi
-    \autor{\ITUauthorsinline}%
+    \ABNTsyncauthorfield{\ITUauthorsinline}%
 }
 \newcommand{\ITUauthorsinline}{%
     \ifcase\value{ITUnumauthors}%
@@ -193,7 +233,7 @@
         \else\PackageError{ITU}{At most three co-supervisors are supported}%
             {Use no more than three \string\cosupervisor\space commands.}%
     \fi
-    \coorientador{\ITUcosupinline}%
+    \ABNTsynccosupervisorfield{\ITUcosupinline}%
 }
 \newcommand{\ITUcosupinline}{%
     \ifcase\value{ITUnumcosup}%
@@ -231,17 +271,17 @@
     \fi}
 
 % Year = last space-separated token of the date ("July, 2026" -> "2026").
-\newcommand{\ITUcitationyear}{\expandafter\ITU@lwstart\expandafter{\ABNTdatadata}}
+\newcommand{\ITUcitationyear}{\expandafter\ITU@lwstart\expandafter{\ABNTdatedata}}
 \def\ITU@lwstart#1{\ITU@lw#1 \ITU@ninil}
 \def\ITU@lw#1 #2\ITU@ninil{\ITU@ifempty{#2}{#1}{\ITU@lw#2\ITU@ninil}}
 
 % Place = the \city value with " -- " normalised to ", ".
-\newcommand{\ITUcitationplace}{{\fullexpandarg\StrSubstitute{\ABNTlocaldata}{ -- }{, }}}
+\newcommand{\ITUcitationplace}{{\fullexpandarg\StrSubstitute{\ABNTcitydata}{ -- }{, }}}
 
 % The assembled citation.
 \newcommand{\ITUautocitation}{%
-    \ITUauthorsieee, ``\ABNTtitulodata : \ABNTsubtitledata,'' \ABNTthesisdata,
-    \ABNTinstituicaodata, \ITUcitationplace, \ITUcitationyear.}
+    \ITUauthorsieee, ``\ABNTtitledata : \ABNTsubtitledata,'' \ABNTthesisdata,
+    \ABNTuniversitydata, \ITUcitationplace, \ITUcitationyear.}
 
 % Signature blocks for the cover sheet: a centered rule with the author's name
 % centered underneath. \ITUsignatures renders one block per registered author
@@ -888,20 +928,20 @@
             % --- Institution and department, top-right corner of the banner.
             \node[anchor=north east, align=right, text=white, text width=95mm]
                 at ([shift={(-12mm,-12mm)}]current page.north east)
-                {\ABNTifnotempty{\ABNTinstituicaodata}{%
-                     {\bfseries\normalsize\ABNTinstituicaodata\par}}%
+                {\ABNTifnotempty{\ABNTuniversitydata}{%
+                     {\bfseries\normalsize\ABNTuniversitydata\par}}%
                  \vspace{-1.75mm}%
-                 \ABNTifnotempty{\ABNTdepartamentodata}{%
-                     {\mdseries\normalsize\ABNTdepartamentodata\par}}};
+                 \ABNTifnotempty{\ABNTdepartmentdata}{%
+                     {\mdseries\normalsize\ABNTdepartmentdata\par}}};
 
             % --- Title, programme and work type, lower-left of the banner.
             \node[anchor=south west, align=left, text=white, text width=170mm]
                 at ($(current page.north west)+(12mm,12mm)-(0pt,\bannerheight)$)
-                {\ABNTifnotempty{\ABNTtitulodata}{%
-                    {\bfseries\fontsize{25pt}{24pt}\selectfont\ABNTtitulodata\par}}%
+                {\ABNTifnotempty{\ABNTtitledata}{%
+                    {\bfseries\fontsize{25pt}{24pt}\selectfont\ABNTtitledata\par}}%
                  \ABNTifnotempty{\ABNTsubtitledata}{%
                     {\fontsize{22pt}{24pt}\selectfont\ABNTsubtitledata\par}}%
-                 \ABNTifnotempty{\ABNTautordata}{%
+                 \ABNTifnotempty{\ABNTauthordata}{%
                     \vspace{6mm}%
                     {\fontsize{17pt}{16pt}\selectfont
                     \ITUauthorslined\par}}%
@@ -912,7 +952,7 @@
     \end{titlepage}
 }
 
-% Colophon / information page (placed between the cover and the folha de rosto).
+% Colophon / information page (placed between the cover and the cover sheet).
 % A single label:value row: a fixed-width, left-aligned label followed by a
 % top-aligned paragraph box so long values wrap with a hanging indent under the
 % value column.
@@ -948,8 +988,8 @@
         {%
             \setlength{\parskip}{0pt}%
             \noindent
-            \ABNTifnotempty{\ABNTtitulodata}{%
-                {\bfseries\small\ABNTtitulodata\par}%
+            \ABNTifnotempty{\ABNTtitledata}{%
+                {\bfseries\small\ABNTtitledata\par}%
             }%
             \noindent
             \ABNTifnotempty{\ABNTsubtitledata}{%
@@ -966,8 +1006,8 @@
                 {\small\ABNTthesisdata\par}%
             }%
             \noindent
-            \ABNTifnotempty{\ABNTdatadata}{%
-                {\small\ABNTdatadata\par}%
+            \ABNTifnotempty{\ABNTdatedata}{%
+                {\small\ABNTdatedata\par}%
             }%
         }%
         \medskip
@@ -986,12 +1026,12 @@
         {%
             \setlength{\parskip}{0pt}%
             \noindent
-            \ABNTifnotempty{\ABNTorientadordata}{%
+            \ABNTifnotempty{\ABNTsupervisordata}{%
                 \ITUinforow{\small Supervisor:}%
-                           {\small\ABNTorientadordata}%
+                           {\small\ABNTsupervisordata}%
             }%
             \noindent
-            \ABNTifnotempty{\ABNTcoorientadordata}{%
+            \ABNTifnotempty{\ABNTcosupervisordata}{%
                 \ITUinforow{\small\ITUcosuplabel}%
                            {\small\ITUcosupinline}%
             }%
@@ -1005,7 +1045,7 @@
         }%
 
         \ITUinforow{\small Published by:}{%
-            \small\ABNTinstituicaodata, \ABNTdepartamentodata
+            \small\ABNTuniversitydata, \ABNTdepartmentdata
             \ABNTifnotempty{\ABNTuniversityaddressdata}{\newline\ABNTuniversityaddressdata}%
             \ABNTifnotempty{\ABNTuniversityphonenumberdata}{\newline\ABNTuniversityphonenumberdata}%
             \ABNTifnotempty{\ABNTuniversitywebsitedata}{\newline\ABNTuniversitywebsitedata}%
@@ -1045,8 +1085,8 @@
             % Bottom: university contact, white, left-aligned.
             \node[anchor=south west, align=left, text=white, text width=150mm]
                 at ([shift={(30mm,25mm)}]current page.south west)
-                {\ABNTifnotempty{\ABNTinstituicaodata}{%
-                     {\bfseries\small\ABNTinstituicaodata\par}}%
+                {\ABNTifnotempty{\ABNTuniversitydata}{%
+                     {\bfseries\small\ABNTuniversitydata\par}}%
                  \ABNTifnotempty{\ABNTuniversityaddressdata}{%
                      {\small\ABNTuniversityaddressdata\par}}%
                  \ABNTifnotempty{\ABNTuniversityphonenumberdata}{%
@@ -1082,8 +1122,8 @@
 
     % Display the title
     \begin{center}
-        \ABNTifnotempty{\ABNTtitulodata}{%
-            \programformat{\ABNTtitulodata} % Format and display the title
+        \ABNTifnotempty{\ABNTtitledata}{%
+            \programformat{\ABNTtitledata} % Format and display the title
         }
     \end{center}
 
@@ -1095,8 +1135,8 @@
     % Display the author name
     \thispagestyle{empty}
     \begin{center}
-        \ABNTifnotempty{\ABNTautordata}{%
-            \autorformat\ITUauthorslined % Format and display the author name(s)
+        \ABNTifnotempty{\ABNTauthordata}{%
+            \ITUauthorformat\ITUauthorslined % Format and display the author name(s)
         }
     \end{center}
 
@@ -1115,15 +1155,15 @@
     \vspace{0.75cm}
     \begin{addmargin}[8em]{8em}
         \begin{center}
-            A thesis submitted in partial fulfillment of the requirements for the degree of \thesisdegreelong{} in the~\ABNTdepartamentodata\\
-            \ABNTinstituicaodata % Institution and department details
+            A thesis submitted in partial fulfillment of the requirements for the degree of \thesisdegreelong{} in the~\ABNTdepartmentdata\\
+            \ABNTuniversitydata % Institution and department details
         \end{center}
     \end{addmargin}
 
     % Display the date
     \begin{center}
-        \ABNTifnotempty{\ABNTdatadata}{%
-            {\dataformat\ABNTdatadata} % Format and display the date
+        \ABNTifnotempty{\ABNTdatedata}{%
+            {\ITUdateformat\ABNTdatedata} % Format and display the date
         }
     \end{center}
 
@@ -1161,12 +1201,12 @@
     \thispagestyle{empty} % No headers or footers
 
     % Display institutional details (if available)
-    \ABNTifnotempty{\ABNTinstituicaodata}{
+    \ABNTifnotempty{\ABNTuniversitydata}{
         \begin{center}
-            {\Large\scshape\ABNTinstituicaodata}\\ % Institution name
-            {\large\scshape\ABNTdepartamentodata}\\ % Department name
-            {\large\scshape\ABNTprogramadata}\\ % Program name
-            {\large\scshape\ABNTlocaldata} % Location
+            {\Large\scshape\ABNTuniversitydata}\\ % Institution name
+            {\large\scshape\ABNTdepartmentdata}\\ % Department name
+            {\large\scshape\ABNTprogramdata}\\ % Program name
+            {\large\scshape\ABNTcitydata} % Location
         \end{center}
     }
 
@@ -1187,49 +1227,49 @@
     \vspace{0.30cm}
     \begin{addmargin}[6em]{6em} % Add margins for better alignment
         \begin{center}
-            \begin{espacosimples}
+            \begin{ITUsinglespacing}
                 The Ph.D. Degree Dissertation of~\ITUauthorsinline~has been examined
                 and approved by the dissertation committee as satisfactory for
                 the dissertation required for the Ph.D. degree in Computer Science.
-            \end{espacosimples}
+            \end{ITUsinglespacing}
         \end{center}
     \end{addmargin}
 
     % Add committee signatures
     \vspace{2cm}
     \begin{addmargin}[13em]{0em} % Add left margin for signature alignment
-        \begin{espacosimples}
+        \begin{ITUsinglespacing}
             \hrulefill\\
-            Dr.~\ABNTorientadordata, Dissertation Supervisor
-        \end{espacosimples}
+            Dr.~\ABNTsupervisordata, Dissertation Supervisor
+        \end{ITUsinglespacing}
 
         \vspace{0.75cm}
 
-        \begin{espacosimples}
+        \begin{ITUsinglespacing}
             \noindent\hrulefill\\
             Dr.~\committeeNameA, \committeeDataA % Committee member A
-        \end{espacosimples}
+        \end{ITUsinglespacing}
 
         \vspace{0.75cm}
 
-        \begin{espacosimples}
+        \begin{ITUsinglespacing}
             \noindent\hrulefill\\
             Dr.~\committeeNameB % Committee member B
-        \end{espacosimples}
+        \end{ITUsinglespacing}
 
         \vspace{0.75cm}
 
-        \begin{espacosimples}
+        \begin{ITUsinglespacing}
             \noindent\hrulefill\\
             Dr.~\committeeNameC % Committee member C
-        \end{espacosimples}
+        \end{ITUsinglespacing}
 
         \vspace{0.75cm}
 
-        \begin{espacosimples}
+        \begin{ITUsinglespacing}
             \noindent\hrulefill\\
             Date
-        \end{espacosimples}
+        \end{ITUsinglespacing}
     \end{addmargin}
     \fi
 }
@@ -1326,7 +1366,7 @@
     \vspace*{\fill}
 
     % Use single spacing for the epigraph text
-    \begin{espacosimples}
+    \begin{ITUsinglespacing}
         % Display the epigraph text, if available
         \ABNTifnotempty{\epigraphdata}{
             \begin{flushright}
@@ -1340,7 +1380,7 @@
                 \end{flushright}
             }
         }
-    \end{espacosimples}
+    \end{ITUsinglespacing}
 }
 
 
@@ -1351,7 +1391,7 @@
 % Define the pre-textual text formatting environment
 \newenvironment{pretextualtext}{
     % Start the environment with single-line spacing
-    \begin{espacosimples}
+    \begin{ITUsinglespacing}
         \small % Set text size to small
         % Configure a list to control margins and indentation
         \begin{list}{}{
@@ -1366,7 +1406,7 @@
     {
         % End the list and spacing environment
         \end{list}
-    \end{espacosimples}
+    \end{ITUsinglespacing}
 }
 
 % Redefine the abstract formatting
@@ -1402,16 +1442,16 @@
     \global\let\ABNTsummarydata\BODY
 
     % Typeset the abstract content with 1.5 line spacing
-    \begin{espacoumemeio}
+    \begin{ITUonehalfspacing}
         \BODY
-    \end{espacoumemeio}
+    \end{ITUonehalfspacing}
 
     % Add a new page
     \newpage
 }
 
-% Redefine the Danish abstract title
-\renewcommand{\resumoname}{Resume}
+% Define the Danish abstract title
+\newcommand{\danishabstractname}{Resume}
 
 % Define the Danish abstract environment
 \newenvironment{resume}{
@@ -1424,11 +1464,11 @@
 
     % Handle chapter type for hyperlinked table of contents (if enabled)
     \ifthenelse{\boolean{ABNThypertoc}}{
-        \renewcommand{\chaptertype}{resumo.} % Set the chapter type for hyperlinks
+        \renewcommand{\chaptertype}{danishabstract.} % Set the chapter type for hyperlinks
     }{}
 
     % Add the Danish abstract chapter heading
-    \pretextualchapter{\resumoname}
+    \pretextualchapter{\danishabstractname}
 
     % Add vertical spacing before the abstract content
     \vspace{80pt}
@@ -1439,10 +1479,10 @@
     }{}
 
     % Start the Danish abstract content with 1.5 line spacing
-    \begin{espacoumemeio}
+    \begin{ITUonehalfspacing}
 }{
     % End the Danish abstract content and add a new page
-    \end{espacoumemeio}
+    \end{ITUonehalfspacing}
     \newpage
 }
 

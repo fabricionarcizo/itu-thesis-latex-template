@@ -42,6 +42,7 @@
 \RequirePackage{xstring}
 \RequirePackage[english]{babel}
 \RequirePackage{scrextend}
+\RequirePackage{environ}
 \RequirePackage[acronym,nonumberlist]{glossaries}
 
 
@@ -84,10 +85,16 @@
 % command, so neither may be reused here).
 \providecommand{\ABNTcopyrightdata}{}
 \newcommand{\copyrightinfo}[1]{\renewcommand{\ABNTcopyrightdata}{#1}}
-\providecommand{\ABNTaddressdata}{}
-\newcommand{\publisheraddress}[1]{\renewcommand{\ABNTaddressdata}{#1}}
+\providecommand{\ABNTuniversityaddressdata}{}
+\newcommand{\universityaddress}[1]{\renewcommand{\ABNTuniversityaddressdata}{#1}}
+\providecommand{\ABNTuniversitywebsitedata}{}
+\newcommand{\universitywebsite}[1]{\renewcommand{\ABNTuniversitywebsitedata}{#1}}
 \providecommand{\ABNTcitationdata}{}
 \newcommand{\citationinfo}[1]{\renewcommand{\ABNTcitationdata}{#1}}
+
+% English summary text, captured from the abstract environment (see below) so the
+% back cover can reprint it without duplicating the source text.
+\providecommand{\ABNTsummarydata}{}
 
 % Translate the main commands to English.
 \newcommand{\university}[1]{\instituicao{#1}}
@@ -997,8 +1004,8 @@
 
         \ITUinforow{\small Published by:}{%
             \small\ABNTinstituicaodata, \ABNTdepartamentodata
-            \newline
-            \ABNTaddressdata
+            \ABNTifnotempty{\ABNTuniversityaddressdata}{\newline\ABNTuniversityaddressdata}%
+            \ABNTifnotempty{\ABNTuniversitywebsitedata}{\newline\ABNTuniversitywebsitedata}%
         }%
 
         % The citation is generated automatically from the document metadata; a
@@ -1008,6 +1015,42 @@
 
         \vspace*{1cm}%
     }%
+}
+
+% Back cover: the last page of the document. A full black page with white text --
+% the English summary (reused verbatim from the abstract environment, stored in
+% \ABNTsummarydata) at the top, and the university contact details at the bottom.
+% Modeled on \capa: a full-page TikZ overlay with white-text nodes, wrapped in
+% \tikzexternaldisable/\tikzexternalenable because the document enables TikZ
+% externalization and a "remember picture, overlay" picture cannot be externalized.
+\newcommand{\backcover}{%
+    \cleardoublepage
+    \begin{titlepage}%
+        \thispagestyle{empty}%
+        \tikzexternaldisable
+        \begin{tikzpicture}[remember picture, overlay]
+            % Full black background.
+            \fill[black] (current page.north west)
+                  rectangle (current page.south east);
+
+            % Top: English summary (reused abstract text), white, justified.
+            \node[anchor=north, align=justify, text=white, text width=150mm]
+                at ([yshift=-30mm]current page.north)
+                {\ABNTifnotempty{\ABNTsummarydata}{%
+                     \small\ABNTsummarydata\par}};
+
+            % Bottom: university contact, white, left-aligned.
+            \node[anchor=south west, align=left, text=white, text width=150mm]
+                at ([shift={(30mm,25mm)}]current page.south west)
+                {\ABNTifnotempty{\ABNTinstituicaodata}{%
+                     {\bfseries\small\ABNTinstituicaodata\par}}%
+                 \ABNTifnotempty{\ABNTuniversityaddressdata}{%
+                     {\small\ABNTuniversityaddressdata\par}}%
+                 \ABNTifnotempty{\ABNTuniversitywebsitedata}{%
+                     {\ABNTuniversitywebsitedata\par}}};
+        \end{tikzpicture}
+        \tikzexternalenable
+    \end{titlepage}%
 }
 
 % Redefine the \folhaderosto (cover sheet) command
@@ -1324,8 +1367,9 @@
 % Redefine the abstract formatting
 \renewcommand{\ABNTabstractname}{Abstract}
 
-% Define the abstract environment
-\renewenvironment{abstract}{
+% Define the abstract environment. Uses \RenewEnviron (environ package) so the body
+% text can be captured into \ABNTsummarydata and reused verbatim on the back cover.
+\RenewEnviron{abstract}{
     % Ensure the abstract starts on the correct page
     \if@openright
         \cleardoublepage % Start on the right page
@@ -1349,11 +1393,15 @@
         \renewcommand{\chaptertype}{} % Clear the chapter type
     }{}
 
-    % Start the abstract content with 1.5 line spacing
+    % Capture the body so the back cover (\backcover) can reprint it verbatim.
+    \global\let\ABNTsummarydata\BODY
+
+    % Typeset the abstract content with 1.5 line spacing
     \begin{espacoumemeio}
-}{
-    % End the abstract content and add a new page
+        \BODY
     \end{espacoumemeio}
+
+    % Add a new page
     \newpage
 }
 

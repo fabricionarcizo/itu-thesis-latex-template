@@ -80,7 +80,7 @@
 % Translate the main commands to English.
 \newcommand{\university}[1]{\instituicao{#1}}
 \newcommand{\maintitle}[1]{\titulo{#1}}
-\renewcommand{\author}[1]{\autor{#1}}
+\renewcommand{\author}[1]{\ITUaddauthor{#1}}
 \newcommand{\supervisor}[1]{\orientador{#1}}
 \newcommand{\cosupervisor}[1]{\coorientador{#1}}
 \newcommand{\city}[1]{\local{#1}}
@@ -117,6 +117,43 @@
 \providecommand{\departamentformat}{\LARGE}
 \providecommand{\programformat}{\Large}
 \providecommand{\thesisformat}{\normalsize}
+
+% Multiple authors (one to three). Each \author call registers one author, so a
+% single call behaves exactly like before. The registered names are exposed as
+% two render helpers: \ITUauthorslined stacks them one per line (used on the
+% cover and cover sheet) and \ITUauthorsinline prints a grammatical list
+% ("A", "A and B", or "A, B and C") used in running text such as the approval
+% statement. The ABNT author field is kept in sync so emptiness checks and any
+% legacy references keep working.
+\newcounter{ITUnumauthors}
+\providecommand{\ITUauthorA}{}
+\providecommand{\ITUauthorB}{}
+\providecommand{\ITUauthorC}{}
+\newcommand{\ITUaddauthor}[1]{%
+    \stepcounter{ITUnumauthors}%
+    \ifcase\value{ITUnumauthors}%
+        \or\renewcommand{\ITUauthorA}{#1}%
+        \or\renewcommand{\ITUauthorB}{#1}%
+        \or\renewcommand{\ITUauthorC}{#1}%
+        \else\PackageError{ITU}{At most three authors are supported}%
+            {Use no more than three \string\author\space commands.}%
+    \fi
+    \autor{\ITUauthorsinline}%
+}
+\newcommand{\ITUauthorsinline}{%
+    \ifcase\value{ITUnumauthors}%
+    \or\ITUauthorA
+    \or\ITUauthorA{} and \ITUauthorB
+    \or\ITUauthorA, \ITUauthorB{} and \ITUauthorC
+    \fi
+}
+\newcommand{\ITUauthorslined}{%
+    \ifcase\value{ITUnumauthors}%
+    \or\ITUauthorA
+    \or\ITUauthorA\\\ITUauthorB
+    \or\ITUauthorA\\\ITUauthorB\\\ITUauthorC
+    \fi
+}
 
 % Thesis type configuration: bachelor | master | phd | research. A single
 % \thesistype command drives the document level: it sets a boolean for the
@@ -731,7 +768,7 @@
             % --- Institution logo, top-left corner of the banner.
             \node[anchor=north west, inner sep=0]
                 at ([shift={(12mm,-12mm)}]current page.north west)
-                {\includegraphics[width=16mm]{style/logo.png}};
+                {\includegraphics[width=20mm]{style/logo.png}};
 
             % --- Institution and department, top-right corner of the banner.
             \node[anchor=north east, align=right, text=white, text width=95mm]
@@ -750,9 +787,11 @@
                  \ABNTifnotempty{\ABNTsubtitledata}{%
                     {\fontsize{22pt}{24pt}\selectfont\ABNTsubtitledata\par}}%
                  \ABNTifnotempty{\ABNTautordata}{%
-                     \vspace{2mm}{\mdseries\LARGE\ABNTautordata\par}}
+                    \vspace{6mm}%
+                    {\fontsize{17pt}{16pt}\selectfont
+                    \ITUauthorslined\par}}%
                  \ABNTifnotempty{\ABNTthesisdata}{%
-                     {\mdseries\large\ABNTthesisdata\par}}};
+                     {\large\ABNTthesisdata\par}}};
         \end{tikzpicture}
         \tikzexternalenable
     \end{titlepage}
@@ -796,7 +835,7 @@
     \thispagestyle{empty}
     \begin{center}
         \ABNTifnotempty{\ABNTautordata}{%
-            \autorformat\ABNTautordata % Format and display the author name
+            \autorformat\ITUauthorslined % Format and display the author name(s)
         }
     \end{center}
 
@@ -887,7 +926,7 @@
     \begin{addmargin}[6em]{6em} % Add margins for better alignment
         \begin{center}
             \begin{espacosimples}
-                The Ph.D. Degree Dissertation of~\ABNTautordata~has been examined
+                The Ph.D. Degree Dissertation of~\ITUauthorsinline~has been examined
                 and approved by the dissertation committee as satisfactory for
                 the dissertation required for the Ph.D. degree in Computer Science.
             \end{espacosimples}

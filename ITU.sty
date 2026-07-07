@@ -155,6 +155,33 @@
     \fi
 }
 
+% Signature blocks for the cover sheet: a centered rule with the author's name
+% centered underneath. \ITUsignatures renders one block per registered author
+% (1 to 3), so the signature area adapts to the number of authors.
+\newcommand{\ITUsignatureblock}[1]{%
+    \rule{0.6\textwidth}{0.5pt}\\[2pt]
+    #1\par
+}
+
+\newcommand{\ITUsignatures}{%
+    \begin{center}
+        \ifcase\value{ITUnumauthors}%
+        \or
+            \ITUsignatureblock{\ITUauthorA}%
+        \or
+            \ITUsignatureblock{\ITUauthorA}%
+            \vspace{8mm}%
+            \ITUsignatureblock{\ITUauthorB}%
+        \or
+            \ITUsignatureblock{\ITUauthorA}%
+            \vspace{8mm}%
+            \ITUsignatureblock{\ITUauthorB}%
+            \vspace{8mm}%
+            \ITUsignatureblock{\ITUauthorC}%
+        \fi
+    \end{center}%
+}
+
 % Thesis type configuration: bachelor | master | phd | research. A single
 % \thesistype command drives the document level: it sets a boolean for the
 % chosen type, auto-fills the type label (\subtitle) and the long degree
@@ -866,10 +893,11 @@
         }
     \end{center}
 
-    % Author signature.
-    % Add the author's signature
-    \vspace{6cm}
-    Signature of the Author \hrulefill \par
+    % Author signature(s): a centered line with the author name underneath,
+    % one signature block per registered author. The blocks are distributed in
+    % the remaining space so one, two, or three authors all fit on the page.
+    \vfill
+    \ITUsignatures
 
     % Fill the remaining space on the page
     \vspace*{\fill}

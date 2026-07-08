@@ -649,39 +649,77 @@
     \@schapter%
 }
 
+% Chapter-title band geometry (matched to the two decorative rules drawn in
+% style/chapter.png). Offsets are measured from the text top, where the glyph is
+% anchored; tune these if the artwork changes.
+\newsavebox{\ITU@titlebox}
+\newsavebox{\ITU@numbox}
+\newlength{\ITU@titlemaxheight}\setlength{\ITU@titlemaxheight}{74pt}% ~3 lines at \ABNTchaptersize
+\newlength{\ITU@titlepos}\setlength{\ITU@titlepos}{-16pt}% band centre, measured down from the text top
+\newlength{\ITU@headskip}\setlength{\ITU@headskip}{154pt}% space before the body text (clears the glyph)
+\newlength{\ITU@numposx}\setlength{\ITU@numposx}{391pt}% box centre, to the right of the left margin
+\newlength{\ITU@numposy}\setlength{\ITU@numposy}{52pt}% box centre, above the putat origin
+\newlength{\ITU@numgap}\setlength{\ITU@numgap}{2pt}% gap between "Chapter" and the number
+\newlength{\ITU@titleoff}% scratch: raise that recentres a box on its own geometric middle
+\newlength{\ITU@numoff}% scratch: same, for the name/number box
+
+% Typeset the chapter title into \ITU@titlebox, shrinking the font until the
+% block fits within \ITU@titlemaxheight (so titles longer than ~3 lines are
+% scaled down and stay inside the band).
+\newcommand{\ITU@fittitle}[1]{%
+    \normalfont\ABNTchaptersize\ABNTchapterfont% Start from the custom chapter size and font
+    \dimen@=\f@size\p@% Current font size as the starting point
+    \def\ITU@titletext{% Respect the capitalization option
+        \ifthenelse{\boolean{ABNTcapchap}}{\MakeUppercase{#1}}{#1}%
+    }%
+    \fontsize{\dimen@}{1.2\dimen@}\selectfont
+    \sbox{\ITU@titlebox}{\parbox[c]{\linewidth}{\centering\ITU@titletext\par}}%
+    \@whiledim\dimexpr\ht\ITU@titlebox+\dp\ITU@titlebox\relax>\ITU@titlemaxheight\do{%
+        \dimen@=.95\dimen@% Shrink and re-typeset until it fits
+        \fontsize{\dimen@}{1.2\dimen@}\selectfont
+        \sbox{\ITU@titlebox}{\parbox[c]{\linewidth}{\centering\ITU@titletext\par}}%
+    }%
+}
+
 % Layout of the chapter name and number.
+%
+% Both the chapter title and the "Chapter <n>" name/number are drawn as absolute
+% overlays (\putat, anchored to the text top exactly like the glyph itself), so
+% their positions do not depend on the flow baseline of the surrounding text.
+% The title is centred between the two rules of the glyph; the name/number is
+% stacked (name and number sharing one vertical axis) and centred inside the
+% square box drawn in the glyph.
 \def\@makechapterhead#1{
-    {
-        % Add vertical spacing before the chapter heading
-        \vspace*{-90pt}\par
-        \begin{center}
-            % Place the chapter name
-            \hspace{370pt}% Adjust horizontal position for chapter name
-            \Large{\chaptername\par}% Set the chapter name in large font
-
-            % Place the chapter number
-            \hspace{370pt}% Adjust horizontal position for chapter number
-            \resizebox{!}{1cm}{\thechapter\par}% Resize chapter number to 1cm height
-        \end{center}
-        % Reset vertical spacing after the heading
-        \vspace*{0pt}\par
-    }
-    {
-        % Style and format the chapter title
-        \centering% Center the chapter title
-        \normalfont% Use normal font style
-        \ABNTchaptersize\ABNTchapterfont% Apply custom size and font for the chapter title
-
-        % Check if capitalization is enabled for the chapter title
-        \ifthenelse{\boolean{ABNTcapchap}}{
-            \MakeUppercase{#1}% Convert chapter title to uppercase if enabled
-        }{
-            #1% Keep chapter title as is if capitalization is disabled
-        }
-        \par% End the chapter title
-    }
-    % Add vertical spacing after the chapter heading
-    \vspace{120pt}\par
+    {%
+        % Leading empty overlay fixes \topskip so the anchor is identical for any
+        % content height (needed for the multi-line title to centre correctly).
+        \putat{0}{\ITU@titlepos}{}%
+        % Title: auto-fitted, recentred on its own geometric middle, dropped onto
+        % \ITU@titlepos (the band centre).
+        \ITU@fittitle{#1}%
+        \setlength{\ITU@titleoff}{-.5\ht\ITU@titlebox}%
+        \addtolength{\ITU@titleoff}{.5\dp\ITU@titlebox}%
+        \putat{0}{\ITU@titlepos}{%
+            \raisebox{\ITU@titleoff}[0pt][0pt]{\usebox{\ITU@titlebox}}%
+        }%
+        % Name/number: "Chapter" over the number, both centred on a common axis
+        % (\shortstack), the whole stack centred on the box centre both
+        % horizontally (\makebox[0pt][c] at \ITU@numposx) and vertically
+        % (recentred on its middle, dropped onto \ITU@numposy).
+        \sbox{\ITU@numbox}{%
+            \shortstack{{\Large\chaptername}\\[\ITU@numgap]%
+                \resizebox{!}{1cm}{\normalfont\thechapter}}%
+        }%
+        \setlength{\ITU@numoff}{-.5\ht\ITU@numbox}%
+        \addtolength{\ITU@numoff}{.5\dp\ITU@numbox}%
+        \putat{\ITU@numposx}{\ITU@numposy}{%
+            \makebox[0pt][c]{%
+                \raisebox{\ITU@numoff}[0pt][0pt]{\usebox{\ITU@numbox}}%
+            }%
+        }%
+    }%
+    % Space so the body text clears the glyph (keeps the original body start).
+    \vspace{\ITU@headskip}\par
 }
 
 % Layout of the appendix/annex chapter name and number.

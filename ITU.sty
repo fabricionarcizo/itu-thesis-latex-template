@@ -456,9 +456,32 @@
     \ifthenelse{\boolean{ABNTrestorecol}}{\twocolumn}{}%
 }
 
-% Place the decorative chapter/header glyph (style/#1) at the top of the page.
+% Place the decorative chapter glyph (style/#1) at the top of the page.
 \newcommand{\ITU@chapterglyph}[1]{%
     \putat{-25}{-121}{\includegraphics[scale=0.08]{style/#1}}%
+}
+
+% Place the decorative header glyph (three rules, drawn directly in LaTeX
+% instead of style/header.png) at the top of the page, used for unnumbered
+% pre-textual chapters, the table of contents, glossary and bibliography.
+% Geometry below (all offsets/sizes measured in bp -- "big points", the
+% PDF/PostScript unit, i.e. what raster measurements correspond to 1:1 --
+% relative to the same (0,0) anchor used by \ITU@chapterglyph, the text-block
+% top) was calibrated to match the original artwork pixel-for-pixel. Using bp
+% (rather than pt) avoids the ~0.4% pt-to-bp shrink that would otherwise
+% throw off the wide rules by a couple of points:
+%   - top rule:    x in [-21.12, 431.76], y in [21.12, 27.12]  (height 6.00bp)
+%   - middle rule: x in [ 93.12, 431.76], y in [-109.44, -107.52] (height 1.92bp)
+%   - bottom rule: x in [159.36, 431.76], y in [-119.28, -114.72] (height 4.56bp)
+\newcommand{\ITU@headerglyph}{%
+    \begingroup
+        \unitlength=1bp%
+        \begin{picture}(0,0)(0,0)
+            \put(-21.12,21.12){\rule{452.88bp}{6.00bp}}% Top rule
+            \put(93.12,-109.44){\rule{338.64bp}{1.92bp}}% Middle rule
+            \put(159.36,-119.28){\rule{272.40bp}{4.56bp}}% Bottom rule
+        \end{picture}%
+    \endgroup
 }
 
 % Set / clear \chaptertype for the hyperlinked table of contents.
@@ -630,8 +653,8 @@
     % Clear the page before starting a new pre-textual chapter, respecting 'openright' option
     \ITU@clearpage
 
-    % Add a custom header image for pre-textual chapters at a specified position
-    \ITU@chapterglyph{header.png}%
+    % Add the decorative header rules for pre-textual chapters
+    \ITU@headerglyph%
 
     % Add vertical space below the image
     \vspace{6pt}%
@@ -790,8 +813,8 @@
     % Clear the page before starting the table of contents, respecting 'openright' option
     \ITU@clearpage
 
-    % Add a custom header image
-    \ITU@chapterglyph{header.png}%
+    % Add the decorative header rules
+    \ITU@headerglyph%
 
     % Add vertical space below the header
     \vspace{6pt}%
@@ -893,8 +916,8 @@
     % Clear the page before starting the glossary, respecting 'openright' option
     \ITU@clearpage
 
-    % Add a custom header image
-    \ITU@chapterglyph{header.png}%
+    % Add the decorative header rules
+    \ITU@headerglyph%
 
     % Add vertical spacing below the header
     \vspace{6pt}%
@@ -1464,8 +1487,8 @@
     % Ensure the bibliography starts on a new page or right page
     \ITU@clearpage
 
-    % Add a custom header image
-    \ITU@chapterglyph{header.png}%
+    % Add the decorative header rules
+    \ITU@headerglyph%
 
     % Add vertical spacing and set the page style
     \vspace{6pt}

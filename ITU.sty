@@ -917,7 +917,7 @@
 % 14. Cover, colophon and sheets
 % -----------------------------------------------------------------------------
 
-% Height of the top banner (~42% of an A4 page); the photo fills the remainder.
+% Height of the top banner (~37% of an A4 page); the photo fills the remainder.
 \newlength{\bannerheight}
 \setlength{\bannerheight}{110mm}
 
@@ -958,11 +958,12 @@
             % --- Institution and department, top-right corner of the banner.
             \node[anchor=north east, align=right, text=white, text width=95mm]
                 at ([shift={(-12mm,-12mm)}]current page.north east)
-                {\ABNTifnotempty{\ABNTuniversitydata}{%
-                     {\bfseries\normalsize\ABNTuniversitydata\par}}%
-                 \vspace{-1.75mm}%
-                 \ABNTifnotempty{\ABNTdepartmentdata}{%
-                     {\mdseries\normalsize\ABNTdepartmentdata\par}}};
+                {\raggedleft
+                \ABNTifnotempty{\ABNTuniversitydata}{%
+                    {\bfseries\normalsize\ABNTuniversitydata\par}}%
+                \vspace{-1.75mm}%
+                \ABNTifnotempty{\ABNTdepartmentdata}{%
+                    {\mdseries\normalsize\ABNTdepartmentdata\par}}};
 
             % --- Title, programme and work type, lower-left of the banner.
             \node[anchor=south west, align=left, text=white, text width=170mm]

@@ -456,9 +456,38 @@
     \ifthenelse{\boolean{ABNTrestorecol}}{\twocolumn}{}%
 }
 
-% Place the decorative chapter glyph (style/#1) at the top of the page.
-\newcommand{\ITU@chapterglyph}[1]{%
-    \putat{-25}{-121}{\includegraphics[scale=0.08]{style/#1}}%
+% Place the decorative chapter-number glyph at the top of the page, used by
+% the numbered \chapter command (three rules, drawn directly in LaTeX instead
+% of style/chapter.png). Geometry below (all offsets/sizes in bp -- "big
+% points", the PDF/PostScript unit, i.e. what raster measurements correspond
+% to 1:1 -- relative to the (0,0) anchor at the text-block top) was measured
+% from the original artwork pixels and cross-validated against
+% \ITU@headerglyph's render-calibrated numbers (shared rules match exactly;
+% the top rule is shorter here, stopping before the number box):
+%   - top rule:      x in [-21.12, 336.32], y in [21.12, 27.12] (height 6.00bp)
+%   - middle rule:   x in [ 93.12, 431.76], y in [-109.44, -107.52] (height 1.92bp)
+%   - bottom rule:   x in [159.36, 431.76], y in [-119.28, -114.72] (height 4.56bp)
+%   - drop shadow:   x in [344.60, 444.12], y in [-12.60, 53.88]
+%   - box border:    x in [340.60, 438.52], y in [ -6.92, 57.80] (filled black)
+%   - box interior:  x in [341.48, 437.64], y in [ -6.04, 56.92] (filled white,
+%                    masks the border's centre, leaving a ~0.88bp ring)
+% The "Chapter <n>" text itself is drawn separately, on top, by the existing
+% \ITU@numbox machinery in \@makechapterhead.
+\newcommand{\ITU@chapterglyph}{%
+    \begingroup
+        \unitlength=1bp%
+        \begin{picture}(0,0)(0,0)
+            \put(-21.12,21.12){\rule{357.44bp}{6.00bp}}% Top rule
+            \put(93.12,-109.44){\rule{338.64bp}{1.92bp}}% Middle rule
+            \put(159.36,-119.28){\rule{272.40bp}{4.56bp}}% Bottom rule
+            \color{black}%
+            \put(344.60,-12.60){\rule{99.52bp}{66.48bp}}% Number-box drop shadow
+            \put(340.60,-6.92){\rule{97.92bp}{64.72bp}}% Number-box border
+            \color{white}%
+            \put(341.48,-6.04){\rule{96.16bp}{62.96bp}}% Number-box interior
+            \color{black}%
+        \end{picture}%
+    \endgroup
 }
 
 % Place the decorative header glyph (three rules, drawn directly in LaTeX
@@ -623,8 +652,8 @@
     % Clear the page before a new chapter, handling 'openright' option
     \ITU@clearpage
 
-    % Add a custom chapter image at a specific position
-    \ITU@chapterglyph{chapter.png}%
+    % Add the decorative chapter-number glyph (rules, shadow, box)
+    \ITU@chapterglyph%
 
     % Apply the specific page style for the chapter title page
     \thispagestyle{\chaptertitlepagestyle}%
@@ -672,9 +701,9 @@
     \@schapter%
 }
 
-% Chapter-title band geometry (matched to the two decorative rules drawn in
-% style/chapter.png). Offsets are measured from the text top, where the glyph is
-% anchored; tune these if the artwork changes.
+% Chapter-title band geometry (matched to the two decorative rules drawn by
+% \ITU@chapterglyph). Offsets are measured from the text top, where the glyph
+% is anchored; tune these if the geometry changes.
 \newsavebox{\ITU@titlebox}
 \newsavebox{\ITU@numbox}
 \newlength{\ITU@titlemaxheight}\setlength{\ITU@titlemaxheight}{74pt}% ~3 lines at \ABNTchaptersize

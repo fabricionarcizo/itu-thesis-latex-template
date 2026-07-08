@@ -82,6 +82,19 @@ Another good alternative for creating plots is the \texttt{pgfplots} package. Th
     \label{fig:correlation-analysis}
 \end{figure}
 
+You can also create animations in \LaTeX using the \texttt{animate} package. This is particularly useful for visualizing dynamic processes or changes over time. For example, you can create an animated sine wave with a phase shift by generating multiple frames in Python and compiling them into an animation. However, only some PDF readers support animations, so be sure to test your document in a compatible viewer (e.g., \href{https://www.foxit.com/pdf-reader}{Foxit PDF Reader}). Figure~\ref{fig:sine-anim} shows how to include an animated sine wave in your document:
+\begin{figure}[h]
+    \centering
+    \animategraphics[
+        controls,loop,autoplay,     % UI + behavior
+        poster=first,               % still frame when not playing
+        width=0.5\linewidth,        % scale widget
+        type=pdf                    % force the extension if needed
+    ]{12}{plots/sine_anim}{0}{120}  % 12 fps, multi-page PDF, first..last (0-based)
+    \caption{Animated sine with phase shift.}
+    \label{fig:sine-anim}
+\end{figure}
+
 \section{Analysis and Interpretation}\label{sec:analysis-interpretation}
 Analyze the results in the context of your research questions or hypotheses. Discuss trends, patterns, and implications, and highlight how your findings relate to previous work. For example: ``\textit{The results show a significant improvement in gaze estimation accuracy using the proposed method. The average gaze accuracy increased up to 30\% compared to the traditional methods, as shown in Table~\ref{tab:real-gaussian-distribution}. The results indicate a significant improvement in performance compared to prior work~\cite{Narcizo2017}. Models $H_e^{s*}$ and $P_e^{s*}$ outperformed other models, increase the high-accuracy gaze estimation to 62\% and 63\% respectivally.}''
 

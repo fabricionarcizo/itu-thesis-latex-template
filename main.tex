@@ -39,10 +39,11 @@
 % -----------------------------------------------------------------------------
 % General Utility Packages
 % -----------------------------------------------------------------------------
+% Packages already provided by abnt.cls (amsmath, amssymb, setspace, calc) or by
+% the ITU package (glossaries) are intentionally not re-loaded here.
 
 % Encoding and fonts.
-\usepackage{fontspec}  % Font selection for XeLaTeX and LuaLaTeX.
-\usepackage{type1cm}   % Custom section heading font size.
+\usepackage{type1cm}  % Scalable Computer Modern sizes for large headings.
 
 % Document formatting and structure.
 \usepackage{pdflscape}  % Landscape orientation for some pages.
@@ -50,39 +51,26 @@
 \usepackage{comment}    % Block comment support.
 
 % Text and color formatting.
-\usepackage{xcolor}           % Text color customization.
-\usepackage{lettrine}         % Drop caps (decorative first letter).
-\usepackage{hologo}           % Typeset TeX-related logos.
-\usepackage{color, colortbl}  % Table cell coloring
+\usepackage{xcolor}    % Text color customization.
+\usepackage{lettrine}  % Drop caps (decorative first letter).
 
 % Graphics and figures.
 \usepackage{graphicx}                    % To include images.
 \graphicspath{{./images/}}               % Path for image files.
-\usepackage{float}                       % Control figure/table placement.
-\usepackage{subcaption}                  % Support for subfigures.
 \usepackage[font=footnotesize]{caption}  % Customize figure/table captions.
-\usepackage{tikz} 					     % Drawing package.
-\usepackage{pgfplots} 					 % Plotting package.
-\usepackage{readarray} 				     % Read arrays from external files.
-
-% Lists.
-\usepackage{paralist}             % Inline or compact list environments.
-\usepackage{enumerate}            % Extended enumerate lists.
-\usepackage[ampersand]{easylist}  % Easy-to-use custom lists.
+\usepackage{subcaption}                  % Support for subfigures.
+\usepackage{tikz}                        % Drawing package.
+\usepackage{pgfplots}                    % Plotting package.
+\usepackage{animate}  	                 % Add animation support for dynamic visualizations.
 
 % Tables.
-\usepackage{longtable}       % Multi-page tables
-\usepackage{multirow}        % Cells spanning multiple rows
-\usepackage{bigstrut}        % Adjust vertical spacing in table rows
-\usepackage{array}           % Enhanced table column formatting
-\usepackage{calc}            % Arithmetic for table dimensions
-\usepackage{setspace}        % Custom text spacing
+\usepackage{longtable}       % Multi-page tables.
+\usepackage{array}           % Enhanced table column formatting.
 \usepackage{booktabs}        % Professional-quality tables.
 \usepackage{threeparttable}  % Three-part tables.
 
 % Math and symbols.
-\usepackage{amsmath, amssymb}  % Advanced mathematical typesetting.
-\usepackage{mathtools}         % Advanced math tools.
+\usepackage{mathtools}  % Advanced math tools (loads amsmath).
 
 % Links and URLs.
 \usepackage[colorlinks=false]{hyperref}  % For hyperlinks (color disabled).
@@ -94,117 +82,13 @@
 % Code and listings.
 \usepackage{listings}  % To print source code in the document.
 
-% Glossaries and acronyms.
-\usepackage[acronym,nonumberlist]{glossaries}  % Acronym and glossary support.
-
 
 % -----------------------------------------------------------------------------
-% Color Definitions
+% Document Configuration
 % -----------------------------------------------------------------------------
-\definecolor{Gray}{gray}{0.8} 
-\definecolor{halfgray}{gray}{0.55}
-\definecolor{ipython_frame}{RGB}{207, 207, 207}
-\definecolor{ipython_bg}{RGB}{247, 247, 247}
-\definecolor{ipython_red}{RGB}{186, 33, 33}
-\definecolor{ipython_green}{RGB}{0, 128, 0}
-\definecolor{ipython_cyan}{RGB}{64, 128, 128}
-\definecolor{ipython_purple}{RGB}{170, 34, 255}
-
-
-% -----------------------------------------------------------------------------
-% Mathematical Tools
-% -----------------------------------------------------------------------------
-\DeclarePairedDelimiter\abs{\lvert}{\rvert}   % Absolute value
-\DeclarePairedDelimiter\norm{\lVert}{\rVert}  % Norm
-
-
-% -----------------------------------------------------------------------------
-% Table Formatting Packages
-% -----------------------------------------------------------------------------
-
-% Custom Column Types.
-\newcolumntype{L}[1]{>{\raggedright\let\newline\\\arraybackslash\hspace{0pt}}p{#1}}  % Left-aligned.
-\newcolumntype{C}[1]{>{\centering\let\newline\\\arraybackslash\hspace{0pt}}p{#1}}  % Centered.
-\newcolumntype{R}[1]{>{\raggedleft\let\newline\\\arraybackslash\hspace{0pt}}p{#1}}  % Right-aligned.
-
-
-% -----------------------------------------------------------------------------
-% TikZ and PGFPlots Configuration
-% -----------------------------------------------------------------------------
-\usepgfplotslibrary{groupplots}
-\usetikzlibrary{calc,intersections,quotes,angles,external,patterns,positioning}
-\tikzexternalize[prefix=tikz/, optimize=false]
-\pgfplotsset{compat=1.18, lua backend=false}
-\providecommand\mathdefault[1]{#1}
-
-
-% -----------------------------------------------------------------------------
-% Python Language Formatting
-% -----------------------------------------------------------------------------
-\lstdefinelanguage{Python}{
-	morekeywords={access,and,break,class,continue,def,del,elif,else,except,exec,finally,for,from,global,if,import,in,is,lambda,not,or,pass,print,raise,return,try,while},
-	morekeywords=[2]{abs,all,any,basestring,bin,bool,bytearray,callable,chr,classmethod,cmp,compile,complex,delattr,dict,dir,divmod,enumerate,eval,execfile,file,filter,float,format,frozenset,getattr,globals,hasattr,hash,help,hex,id,input,int,isinstance,issubclass,iter,len,list,locals,long,map,max,memoryview,min,next,object,oct,open,ord,pow,property,range,raw_input,reduce,reload,repr,reversed,round,set,setattr,slice,sorted,staticmethod,str,sum,super,tuple,type,unichr,unicode,vars,xrange,zip,apply,buffer,coerce,intern},
-	sensitive=true,
-	morecomment=[l]\#,
-	morestring=[b]',
-	morestring=[b]",
-	morestring=[s]{'''}{'''},
-	morestring=[s]{"""}{"""},
-	morestring=[s]{r'}{'},
-	morestring=[s]{r"}{"},
-	morestring=[s]{r'''}{'''},
-	morestring=[s]{r"""}{"""},
-	morestring=[s]{u'}{'},
-	morestring=[s]{u"}{"},
-	morestring=[s]{u'''}{'''},
-	morestring=[s]{u"""}{"""},
-	% {replace}{replacement}{lenght of replace}
-	% *{-}{-}{1} will not replace in comments and so on
-	literate=
-	{á}{{\'a}}1 {é}{{\'e}}1 {í}{{\'i}}1 {ó}{{\'o}}1 {ú}{{\'u}}1
-	{Á}{{\'A}}1 {É}{{\'E}}1 {Í}{{\'I}}1 {Ó}{{\'O}}1 {Ú}{{\'U}}1
-	{à}{{\`a}}1 {è}{{\`e}}1 {ì}{{\`i}}1 {ò}{{\`o}}1 {ù}{{\`u}}1
-	{À}{{\`A}}1 {È}{{\'E}}1 {Ì}{{\`I}}1 {Ò}{{\`O}}1 {Ù}{{\`U}}1
-	{ä}{{\"a}}1 {ë}{{\"e}}1 {ï}{{\"i}}1 {ö}{{\"o}}1 {ü}{{\"u}}1
-	{Ä}{{\"A}}1 {Ë}{{\"E}}1 {Ï}{{\"I}}1 {Ö}{{\"O}}1 {Ü}{{\"U}}1
-	{â}{{\^a}}1 {ê}{{\^e}}1 {î}{{\^i}}1 {ô}{{\^o}}1 {û}{{\^u}}1
-	{Â}{{\^A}}1 {Ê}{{\^E}}1 {Î}{{\^I}}1 {Ô}{{\^O}}1 {Û}{{\^U}}1
-	{œ}{{\oe}}1 {Œ}{{\OE}}1 {æ}{{\ae}}1 {Æ}{{\AE}}1 {ß}{{\ss}}1
-	{ç}{{\c c}}1 {Ç}{{\c C}}1 {ø}{{\o}}1 {å}{{\r a}}1 {Å}{{\r A}}1
-	{€}{{\EUR}}1 {£}{{\pounds}}1
-	%
-	{^}{{{\color{ipython_purple}\^{}}}}1
-	{=}{{{\color{ipython_purple}=}}}1
-	%
-	{+}{{{\color{ipython_purple}+}}}1
-	{*}{{{\color{ipython_purple}$^\ast$}}}1
-	{/}{{{\color{ipython_purple}/}}}1
-	%
-	{+=}{{{+=}}}1
-	{-=}{{{-=}}}1
-	{*=}{{{$^\ast$=}}}1
-	{/=}{{{/=}}}1,
-	literate=
-	*{-}{{{\color{ipython_purple}-}}}1
-		{?}{{{\color{ipython_purple}?}}}1,
-	%
-	identifierstyle=\color{black}\ttfamily,
-	commentstyle=\color{ipython_cyan}\ttfamily,
-	stringstyle=\color{ipython_red}\ttfamily,
-	keepspaces=true,
-	showspaces=false,
-	showstringspaces=false,
-	rulecolor=\color{ipython_frame},
-	frame=single,
-	frameround={t}{t}{t}{t},
-	framexleftmargin=6mm,
-	numbers=left,
-	numberstyle=\tiny\color{halfgray},
-	backgroundcolor=\color{ipython_bg},
-	% extendedchars=true,
-	basicstyle=\scriptsize,
-	keywordstyle=\color{ipython_green}\ttfamily,
-}
+% Colors, math delimiters, custom column types, TikZ/pgfplots setup and the
+% Python listing language. Loaded after the packages it depends on.
+\input{style/config}
 
 
 % -----------------------------------------------------------------------------
@@ -212,7 +96,7 @@
 % -----------------------------------------------------------------------------
 
 % IMPORTANT: You must execute the following command in the terminal to compile
-% the glossary: `makeglossaries thesis`
+% the glossary: `makeglossaries main`
 \makeglossaries
 \newacronym{abnt}{ABNT}{Brazilian Association of Technical Standards}
 \newacronym{abnt-dk}{ABNT}{Den Brasilianske Standardiseringsorganisation}
@@ -228,20 +112,35 @@
 % -----------------------------------------------------------------------------
 % Basic Information
 % -----------------------------------------------------------------------------
-\university{IT University of Copenhagen}       % University name
-\departament{Computer Science Department}      % Department name
+\university{IT University of Copenhagen}  % University name
+\department{Data Science Section}  % Section name
 \program{Ph.D. Programme in Computer Science}  % Bachelor's Programme in Software Development, Master's Programme in Software Design, or Ph.D. Programme in Computer Science
-\maintitle{Title of the Thesis}      % Main title
-\subtitle{Ph.D. Thesis}              % Bachelor's Thesis, or Master's Thesis
-\author{Student's Name}              % Author's name
-\supervisor{Supervisor's Name}     	 % Supervisor's name
-\cosupervisor{Co-Supervisor's Name}  % Co-Supervisor's name
-\city{Copenhagen -- Denmark}         % City and country
-\info{November, 2024}                % Month and year
+\universityaddress{Rued Langgaards Vej 7, DK-2300 Copenhagen S, Denmark}  % University address
+\universityphonenumber{Phone: +45 7218 5000}  % University phone number
+\universitywebsite{https://www.itu.dk}  % University website
+
+\maintitle{An Unofficial ITU Thesis Template}  % Main title
+\subtitle{For Bachelor's, Master's and Ph.D. Theses}  % Subtitle (optional)
+
+\thesistype{phd}  % Document type: bachelor | master | phd | research (auto-sets the type label; controls the cover/approval sheets)
+
+\author{Fabricio Batista Narcizo}  % Author's name (repeat \author for up to 3 authors)
+%\author{Second Author Name}
+%\author{Third Author Name}
+
+\supervisor{Carlos Ray ``Chuck'' Norris}  % Supervisor's name
+\cosupervisor{Bruce Lee}  % Co-Supervisor's name (repeat \cosupervisor for up to 3)
+\cosupervisor{Steven Frederic Seagal}
+%\cosupervisor{Third Co-Supervisor's Name}
+
+\city{Copenhagen S, Denmark} % City and country
+\date{July, 2026}  % Month and year
+
+\copyrightinfo{Reproduction of this publication in whole or in part must include the customary bibliographic citation, including author attribution, report title, etc.}  % Copyright information (optional)
 
 % Previous academic degrees
-\previousDegrees{B.Sc. University of the West of Santa Catarina, 2005}
-				{M.Sc. Technological Institute of Aeronautics, 2008}
+\previousDegrees{B.Sc. University of the West of Santa Catarina (UNOESC), 2005}
+				{M.Sc. Aeronautics Institute of Technology (ITA), 2008}
 
 % Examination committee members
 \committeeMemberA{Committee Member A}
@@ -252,7 +151,7 @@
 % -----------------------------------------------------------------------------
 % Dedication
 % -----------------------------------------------------------------------------
-\dedication{This Ph.D. thesis is dedicated to all the \LaTeX~errors that tested my patience, the compiler warnings that kept me humble, and the endless debug sessions that taught me resilience. Without them, this journey would have been far too easy-and far less memorable.
+\dedication{This thesis is dedicated to all the \LaTeX~errors that tested my patience, the compiler warnings that kept me humble, and the endless debug sessions that taught me resilience. Without them, this journey would have been far too easy-and far less memorable.
 
 And to coffee, for being the true unsung hero of this endeavor.}
 
@@ -272,6 +171,9 @@ And to coffee, for being the true unsung hero of this endeavor.}
 
 % Generate the cover page
 \cover
+
+% Information (colophon) page
+\infopage
 
 % Additional preliminary pages
 \coversheet  % Cover sheet
@@ -356,9 +258,9 @@ Dette dokument introducerer en skr{\ae}ddersyet \LaTeX-skabelon, der er designet
 % -----------------------------------------------------------------------------
 \annex
 
-% Annex A: Standard Front Page.
-\chapter{Standard Front Page}\label{ann:front-page}
-\includepdf[pages=-]{annexes/front-page.pdf}
+% Annex A: ITU Letter Template.
+\chapter{ITU Letter Template}\label{ann:word-template_uk}
+\includepdf[pages=-]{annexes/word-template_uk.pdf}
 
 
 % -----------------------------------------------------------------------------
@@ -368,6 +270,17 @@ Dette dokument introducerer en skr{\ae}ddersyet \LaTeX-skabelon, der er designet
 
 % Appendix A: Source Code.
 \input{appendices/source-code}
+
+
+% -----------------------------------------------------------------------------
+% Back Cover
+% -----------------------------------------------------------------------------
+
+% Black final page: English summary (top) and university contact (bottom).
+\clearpage
+\hypersetup{pageanchor=false}
+\backcover
+\hypersetup{pageanchor=true}
 
 
 % -----------------------------------------------------------------------------
